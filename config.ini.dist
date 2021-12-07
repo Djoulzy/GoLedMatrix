@@ -11,7 +11,7 @@ HardwareMapping         = "regular"
 ShowRefreshRate         = false
 InverseColors           = false
 DisableHardwarePulsing  = false
-PixelMapperConfig       = ""
+PixelMapperConfig       = "U-mapper"
 
 [RuntimeOptions]
 SlowdownGpio            = 3
