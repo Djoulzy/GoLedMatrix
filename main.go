@@ -23,7 +23,7 @@ func main() {
 
 	confload.Load("config.ini", config)
 
-	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig)
+	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)
 
 	tk := rgbmatrix.NewToolKit(m)

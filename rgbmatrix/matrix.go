@@ -219,7 +219,7 @@ const MatrixEmulatorENV = "MATRIX_EMULATOR"
 // }
 
 // NewRGBLedMatrix returns a new matrix using the given size and config
-func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
+func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) (c Matrix, err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			var ok bool
@@ -231,17 +231,17 @@ func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
 	}()
 
 	if isMatrixEmulator() {
-		return buildMatrixEmulator(config), nil
+		return buildMatrixEmulator(configHard), nil
 	}
 
-	w, h := config.geometry()
+	w, h := configHard.geometry()
 	// cargc := C.int(len(os.Args))
 	// cargv := stringsToC(os.Args)
 	// m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
-	m := C.led_matrix_create_from_options(config.toC(), nil, nil)
+	m := C.led_matrix_create_from_options_and_rt_options(configHard.toC(), configRuntime.toC())
 	b := C.led_matrix_create_offscreen_canvas(m)
 	c = &RGBLedMatrix{
-		Config: config,
+		Config: configHard,
 		width:  w, height: h,
 		matrix: m,
 		buffer: b,
