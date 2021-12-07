@@ -190,6 +190,7 @@ func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
 		return buildMatrixEmulator(config), nil
 	}
 
+	fmt.Printf("Mapper: %s", config.PixelMapperConfig)
 	w, h := config.geometry()
 	cargc := C.int(len(os.Args))
 	cargv := stringsToC(os.Args)
