@@ -35,6 +35,10 @@ void set_disable_hardware_pulsing(struct RGBLedMatrixOptions *o, int disable_har
 void set_inverse_colors(struct RGBLedMatrixOptions *o, int inverse_colors) {
   o->inverse_colors = inverse_colors != 0 ? 1 : 0;
 }
+
+void set_do_gpio_init(struct RGBLedRuntimeOptions *r, int do_gpio_init) {
+  r->do_gpio_init = do_gpio_init != 0 ? 1 : 0;
+}
 */
 import "C"
 import (
@@ -181,7 +185,12 @@ func (r *RuntimeOptions) toC() *C.struct_RGBLedRuntimeOptions {
 	o.gpio_slowdown = C.int(r.GpioSlowdown)
 	o.daemon = C.int(r.Daemon)
 	o.drop_privileges = C.int(r.DropPrivileges)
-	o.do_gpio_init = C.bool(r.DoGpioInit)
+
+	if c.DoGpioInit == true {
+		C.set_do_gpio_init(o, C.int(1))
+	} else {
+		C.set_do_gpio_init(o, C.int(0))
+	}
 
 	return o
 }
