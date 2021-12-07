@@ -8,7 +8,7 @@ import (
 )
 
 func displayImlage(m *rgbmatrix.Matrix) {
-	var d time.Duration = 1000000000
+	var d time.Duration = 100000000000
 
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
