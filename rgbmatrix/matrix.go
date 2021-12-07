@@ -186,7 +186,7 @@ func (r *RuntimeOptions) toC() *C.struct_RGBLedRuntimeOptions {
 	o.daemon = C.int(r.Daemon)
 	o.drop_privileges = C.int(r.DropPrivileges)
 
-	if c.DoGpioInit == true {
+	if r.DoGpioInit == true {
 		C.set_do_gpio_init(o, C.int(1))
 	} else {
 		C.set_do_gpio_init(o, C.int(0))
