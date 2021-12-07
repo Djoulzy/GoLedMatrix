@@ -53,8 +53,8 @@ import (
 // DefaultConfig default WS281x configuration
 var DefaultConfig = HardwareConfig{
 	Rows:              32,
-	Cols:              32,
-	ChainLength:       1,
+	Cols:              64,
+	ChainLength:       4,
 	Parallel:          1,
 	PWMBits:           11,
 	PWMLSBNanoseconds: 130,
@@ -248,6 +248,7 @@ func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) 
 	// cargv := stringsToC(os.Args)
 	// m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
 	m := C.led_matrix_create_from_options_and_rt_options(configHard.toC(), configRuntime.toC())
+	fmt.Printf("Matrix: %v", m)
 	b := C.led_matrix_create_offscreen_canvas(m)
 	c = &RGBLedMatrix{
 		Config: configHard,
