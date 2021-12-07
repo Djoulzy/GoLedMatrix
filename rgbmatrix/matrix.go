@@ -143,6 +143,49 @@ func (c *HardwareConfig) toC() *C.struct_RGBLedMatrixOptions {
 	return o
 }
 
+type RuntimeOptions struct {
+	GpioSlowdown int // 0 = no slowdown.          Flag: --led-slowdown-gpio
+
+	// ----------
+	// If the following options are set to disabled with -1, they are not
+	// even offered via the command line flags.
+	// ----------
+
+	// Thre are three possible values here
+	//   -1 : don't leave choise of becoming daemon to the command line parsing.
+	//        If set to -1, the --led-daemon option is not offered.
+	//    0 : do not becoma a daemon, run in forgreound (default value)
+	//    1 : become a daemon, run in background.
+	//
+	// If daemon is disabled (= -1), the user has to call
+	// RGBMatrix::StartRefresh() manually once the matrix is created, to leave
+	// the decision to become a daemon
+	// after the call (which requires that no threads have been started yet).
+	// In the other cases (off or on), the choice is already made, so the thread
+	// is conveniently already started for you.
+	Daemon int // -1 disabled. 0=off, 1=on. Flag: --led-daemon
+
+	// Drop privileges from 'root' to 'daemon' once the hardware is initialized.
+	// This is usually a good idea unless you need to stay on elevated privs.
+	DropPrivileges int // -1 disabled. 0=off, 1=on. flag: --led-drop-privs
+
+	// By default, the gpio is initialized for you, but if you run on a platform
+	// not the Raspberry Pi, this will fail. If you don't need to access GPIO
+	// e.g. you want to just create a stream output (see content-streamer.h),
+	// set this to false.
+	DoGpioInit bool
+}
+
+func (r *RuntimeOptions) toC() *C.struct_RGBLedRuntimeOptions {
+	o := &C.struct_RGBLedRuntimeOptions{}
+	o.gpio_slowdown = C.int(r.GpioSlowdown)
+	o.daemon = C.int(r.Daemon)
+	o.drop_privileges = C.int(r.DropPrivileges)
+	o.do_gpio_init = C.int(r.DoGpioInit)
+
+	return o
+}
+
 type ScanMode int8
 
 const (
@@ -163,17 +206,17 @@ type RGBLedMatrix struct {
 
 const MatrixEmulatorENV = "MATRIX_EMULATOR"
 
-func stringsToC(s []string) **C.char {
-	cArray := C.malloc(C.size_t(len(s)) * C.size_t(unsafe.Sizeof(uintptr(0))))
+// func stringsToC(s []string) **C.char {
+// 	cArray := C.malloc(C.size_t(len(s)) * C.size_t(unsafe.Sizeof(uintptr(0))))
 
-	a := (*[2000]*C.char)(cArray)
+// 	a := (*[2000]*C.char)(cArray)
 
-	for idx, substring := range s {
-		a[idx] = C.CString(substring)
-	}
+// 	for idx, substring := range s {
+// 		a[idx] = C.CString(substring)
+// 	}
 
-	return (**C.char)(cArray)
-}
+// 	return (**C.char)(cArray)
+// }
 
 // NewRGBLedMatrix returns a new matrix using the given size and config
 func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
@@ -192,10 +235,10 @@ func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
 	}
 
 	w, h := config.geometry()
-	cargc := C.int(len(os.Args))
-	cargv := stringsToC(os.Args)
-	m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
-	// m := C.led_matrix_create_from_options(config.toC(), nil, nil)
+	// cargc := C.int(len(os.Args))
+	// cargv := stringsToC(os.Args)
+	// m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
+	m := C.led_matrix_create_from_options(config.toC(), nil, nil)
 	b := C.led_matrix_create_offscreen_canvas(m)
 	c = &RGBLedMatrix{
 		Config: config,

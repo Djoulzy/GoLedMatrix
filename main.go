@@ -12,13 +12,18 @@ import (
 	"github.com/fogleman/gg"
 )
 
-var config = &rgbmatrix.HardwareConfig{}
+type ConfigData struct {
+	rgbmatrix.HardwareConfig
+	rgbmatrix.RuntimeOptions
+}
+
+var config = &ConfigData{}
 
 func main() {
 
 	confload.Load("config.ini", config)
 
-	m, err := rgbmatrix.NewRGBLedMatrix(config)
+	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig)
 	fatal(err)
 
 	tk := rgbmatrix.NewToolKit(m)
