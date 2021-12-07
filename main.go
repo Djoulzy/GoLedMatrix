@@ -6,8 +6,9 @@ import (
 	"image/color"
 	"time"
 
-	"github.com/fogleman/gg"
 	"GoLedMatrix/rgbmatrix"
+
+	"github.com/fogleman/gg"
 )
 
 var (
@@ -20,7 +21,8 @@ var (
 	show_refresh             = flag.Bool("led-show-refresh", false, "Show refresh rate.")
 	inverse_colors           = flag.Bool("led-inverse", false, "Switch if your matrix has inverse colors on.")
 	disable_hardware_pulsing = flag.Bool("led-no-hardware-pulse", false, "Don't use hardware pin-pulse generation.")
-	gpio               = flag.Int("led-slowdown-gpio", 2, "brightness (0-100)")
+	slowdown_gpio            = flag.Int("led-slowdown-gpio", 2, "-")
+	pixel_mapper             = flag.String("led-pixel-mapper", "U-mapper", "-")
 )
 
 func main() {
