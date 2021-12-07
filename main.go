@@ -36,6 +36,7 @@ func main() {
 	config.ShowRefreshRate = *show_refresh
 	config.InverseColors = *inverse_colors
 	config.DisableHardwarePulsing = *disable_hardware_pulsing
+	config.PixelMapperConfig = *pixel_mapper
 
 	m, err := rgbmatrix.NewRGBLedMatrix(config)
 	fatal(err)
@@ -43,7 +44,7 @@ func main() {
 	tk := rgbmatrix.NewToolKit(m)
 	defer tk.Close()
 
-	tk.PlayAnimation(NewAnimation(image.Point{64, 32}))
+	tk.PlayAnimation(NewAnimation(image.Point{128, 64}))
 }
 
 func init() {
