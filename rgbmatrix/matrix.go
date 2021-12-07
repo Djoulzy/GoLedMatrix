@@ -105,7 +105,8 @@ type HardwareConfig struct {
 }
 
 func (c *HardwareConfig) geometry() (width, height int) {
-	return c.Cols * c.ChainLength, c.Rows * c.Parallel
+	// return c.Cols * c.ChainLength, c.Rows * c.Parallel
+	return 128, 64
 }
 
 func (c *HardwareConfig) toC() *C.struct_RGBLedMatrixOptions {
@@ -191,10 +192,10 @@ func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
 	}
 
 	w, h := config.geometry()
-	// cargc := C.int(len(os.Args))
-	// cargv := stringsToC(os.Args)
-	// m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
-	m := C.led_matrix_create_from_options(config.toC(), nil, nil)
+	cargc := C.int(len(os.Args))
+	cargv := stringsToC(os.Args)
+	m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
+	// m := C.led_matrix_create_from_options(config.toC(), nil, nil)
 	b := C.led_matrix_create_offscreen_canvas(m)
 	c = &RGBLedMatrix{
 		Config: config,
