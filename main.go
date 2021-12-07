@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"GoLedMatrix/clog"
 	"GoLedMatrix/confload"
 	"GoLedMatrix/rgbmatrix"
@@ -18,7 +16,6 @@ var config = &ConfigData{}
 func main() {
 
 	confload.Load("config.ini", config)
-	fmt.Printf("%v", config)
 
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)
