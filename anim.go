@@ -1,5 +1,14 @@
 package main
 
+import (
+	"GoLedMatrix/rgbmatrix"
+	"image"
+	"image/color"
+	"time"
+
+	"github.com/fogleman/gg"
+)
+
 type Animation struct {
 	ctx      *gg.Context
 	position image.Point
@@ -7,8 +16,8 @@ type Animation struct {
 	stroke   int
 }
 
-func BouncingBall(tk *rgbmatrix.ToolKit) {
-	tk := rgbmatrix.NewToolKit(m)
+func BouncingBall(m *rgbmatrix.Matrix) {
+	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 
 	tk.PlayAnimation(NewAnimation(image.Point{128, 64}))

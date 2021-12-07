@@ -1,17 +1,11 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"image"
-	"image/color"
-	"time"
 
 	"GoLedMatrix/clog"
 	"GoLedMatrix/confload"
 	"GoLedMatrix/rgbmatrix"
-
-	"github.com/fogleman/gg"
 )
 
 type ConfigData struct {
@@ -29,7 +23,7 @@ func main() {
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)
 
-	BouncingBall()
+	BouncingBall(&m)
 }
 
 func fatal(err error) {
