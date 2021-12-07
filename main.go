@@ -24,7 +24,8 @@ func main() {
 	fatal(err)
 
 	// BouncingBall(&m)
-	displayGif(&m)
+	// displayGif(&m)
+	displayImlage(&m)
 }
 
 func fatal(err error) {
