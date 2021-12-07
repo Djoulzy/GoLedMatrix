@@ -181,7 +181,7 @@ func (r *RuntimeOptions) toC() *C.struct_RGBLedRuntimeOptions {
 	o.gpio_slowdown = C.int(r.GpioSlowdown)
 	o.daemon = C.int(r.Daemon)
 	o.drop_privileges = C.int(r.DropPrivileges)
-	o.do_gpio_init = C.int(r.DoGpioInit)
+	o.do_gpio_init = C.bool(r.DoGpioInit)
 
 	return o
 }
