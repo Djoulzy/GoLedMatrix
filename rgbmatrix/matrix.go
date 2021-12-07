@@ -244,8 +244,8 @@ func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) 
 	}
 
 	w, h := configHard.geometry()
-	m := C.led_matrix_create_from_options(config.toC(), nil, nil)
-	// m := C.led_matrix_create_from_options_and_rt_options(configHard.toC(), configRuntime.toC())
+	// m := C.led_matrix_create_from_options(configHard.toC(), nil, nil)
+	m := C.led_matrix_create_from_options_and_rt_options(configHard.toC(), configRuntime.toC())
 	b := C.led_matrix_create_offscreen_canvas(m)
 	c = &RGBLedMatrix{
 		Config: configHard,

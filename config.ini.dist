@@ -14,7 +14,3 @@ DisableHardwarePulsing  = false
 PixelMapperConfig       = "U-mapper"
 
 [RuntimeOptions]
-GpioSlowdown            = 3
-Daemon                  = -1
-DropPrivileges          = -1
-DoGpioInit              = false
