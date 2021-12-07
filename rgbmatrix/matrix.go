@@ -190,11 +190,11 @@ func NewRGBLedMatrix(config *HardwareConfig) (c Matrix, err error) {
 		return buildMatrixEmulator(config), nil
 	}
 
-	fmt.Printf("Mapper: %s", config.PixelMapperConfig)
 	w, h := config.geometry()
-	cargc := C.int(len(os.Args))
-	cargv := stringsToC(os.Args)
-	m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
+	// cargc := C.int(len(os.Args))
+	// cargv := stringsToC(os.Args)
+	// m := C.led_matrix_create_from_options(config.toC(), &cargc, &cargv)
+	m := C.led_matrix_create_from_options(config.toC(), nil, nil)
 	b := C.led_matrix_create_offscreen_canvas(m)
 	c = &RGBLedMatrix{
 		Config: config,
