@@ -12,5 +12,10 @@ ShowRefreshRate         = false
 InverseColors           = false
 DisableHardwarePulsing  = false
 PixelMapperConfig       = "U-mapper"
+LimitRefreshRateHz      = 100
 
 [RuntimeOptions]
+GpioSlowdown            = 2
+Daemon                  = 0
+DropPrivileges          = 0
+DoGpioInit              = true

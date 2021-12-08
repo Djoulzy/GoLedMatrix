@@ -106,6 +106,8 @@ type HardwareConfig struct {
 	// to this matrix. A semicolon-separated list of pixel-mappers with optional
 	// parameter.
 	PixelMapperConfig string
+
+	LimitRefreshRateHz int
 }
 
 func (c *HardwareConfig) geometry() (width, height int) {
@@ -125,6 +127,7 @@ func (c *HardwareConfig) toC() *C.struct_RGBLedMatrixOptions {
 	o.scan_mode = C.int(c.ScanMode)
 	o.hardware_mapping = C.CString(c.HardwareMapping)
 	o.pixel_mapper_config = C.CString(c.PixelMapperConfig)
+	o.limit_refresh_rate_hz = C.int(c.LimitRefreshRateHz)
 
 	if c.ShowRefreshRate == true {
 		C.set_show_refresh_rate(o, C.int(1))
