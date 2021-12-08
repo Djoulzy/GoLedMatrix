@@ -1,18 +1,21 @@
 [HardwareConfig]
 Rows                    = 32
-Cols                    = 32
+Cols                    = 64
 ChainLength             = 4
 Parallel                = 1
+
 PWMBits                 = 11
 PWMLSBNanoseconds       = 130
+PWMDitherBits           = 0
 Brightness              = 100
-ScanMode                = "Progressive"
+ScanMode                = 0
 HardwareMapping         = "regular"
-ShowRefreshRate         = false
+ShowRefreshRate         = true
 InverseColors           = false
 DisableHardwarePulsing  = false
 PixelMapperConfig       = "U-mapper"
-LimitRefreshRateHz      = 100
+LimitRefreshRateHz      = 70
+Multiplexing            = 0
 
 [RuntimeOptions]
 GpioSlowdown            = 2

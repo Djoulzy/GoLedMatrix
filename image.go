@@ -13,7 +13,7 @@ func displayImlage(m *rgbmatrix.Matrix) {
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 
-	f, err := os.Open("./robedog.jpg")
+	f, err := os.Open("./land.jpg")
 	fatal(err)
 	img, _, err := image.Decode(f)
 
