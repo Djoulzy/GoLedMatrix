@@ -10,7 +10,7 @@ func displayGif(m *rgbmatrix.Matrix) {
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 
-	f, err := os.Open("./mario.gif")
+	f, err := os.Open("./atime.gif")
 	fatal(err)
 
 	close, err := tk.PlayGIF(f)
