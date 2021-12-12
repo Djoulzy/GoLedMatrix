@@ -20,8 +20,8 @@ func main() {
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)
 
-	BouncingBall(&m)
-	// displayGif(&m)
+	// BouncingBall(&m)
+	displayGif(&m)
 	// displayImlage(&m)
 }
 
