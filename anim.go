@@ -20,7 +20,7 @@ func BouncingBall(m *rgbmatrix.Matrix) {
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 
-	tk.PlayAnimation(NewAnimation(image.Point{128, 64}))
+	tk.PlayAnimation(NewAnimation(image.Point{128, 128}))
 }
 
 func NewAnimation(sz image.Point) *Animation {
