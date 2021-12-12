@@ -113,7 +113,7 @@ type HardwareConfig struct {
 
 func (c *HardwareConfig) geometry() (width, height int) {
 	// return c.Cols * c.ChainLength, c.Rows * c.Parallel
-	return 128, 64
+	return 128, 128
 }
 
 func (c *HardwareConfig) toC() *C.struct_RGBLedMatrixOptions {
