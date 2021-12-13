@@ -15,13 +15,13 @@ func displayImage(m *rgbmatrix.Matrix) {
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 
-	files, err := ioutil.ReadDir("./img/")
+	files, err := ioutil.ReadDir("./img")
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, finfo := range files {
-		f, err := os.Open(finfo.Name())
+		f, err := os.Open("./img/"+finfo.Name())
 		fatal(err)
 		img, _, err := image.Decode(f)
 
