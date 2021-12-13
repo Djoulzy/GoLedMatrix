@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func displayImlage(m *rgbmatrix.Matrix) {
+func displayImage(m *rgbmatrix.Matrix) {
 	var d time.Duration = 100000000000
 
 	tk := rgbmatrix.NewToolKit(*m)

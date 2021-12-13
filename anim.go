@@ -26,7 +26,7 @@ func BouncingBall(m *rgbmatrix.Matrix) {
 func NewAnimation(sz image.Point) *Animation {
 	return &Animation{
 		ctx:    gg.NewContext(sz.X, sz.Y),
-		dir:    image.Point{1, 1},
+		dir:    image.Point{5, 1},
 		stroke: 5,
 	}
 }
