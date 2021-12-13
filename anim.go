@@ -4,6 +4,7 @@ import (
 	"GoLedMatrix/rgbmatrix"
 	"image"
 	"image/color"
+	"os"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -14,6 +15,7 @@ type Animation struct {
 	position image.Point
 	dir      image.Point
 	stroke   int
+	bground  image.Image
 }
 
 func BouncingBall(m *rgbmatrix.Matrix) {
@@ -24,10 +26,15 @@ func BouncingBall(m *rgbmatrix.Matrix) {
 }
 
 func NewAnimation(sz image.Point) *Animation {
+	f, err := os.Open("./img/robedog.jpg")
+	fatal(err)
+	img, _, err := image.Decode(f)
+
 	return &Animation{
-		ctx:    gg.NewContext(sz.X, sz.Y),
-		dir:    image.Point{5, 1},
-		stroke: 5,
+		ctx:     gg.NewContext(sz.X, sz.Y),
+		dir:     image.Point{5, 1},
+		stroke:  5,
+		bground: img,
 	}
 }
 
@@ -37,6 +44,7 @@ func (a *Animation) Next() (image.Image, <-chan time.Time, error) {
 	a.ctx.SetColor(color.Black)
 	a.ctx.Clear()
 
+	a.ctx.DrawImage(a.bground, 0, 0)
 	a.ctx.DrawCircle(float64(a.position.X), float64(a.position.Y), float64(a.stroke))
 	a.ctx.SetColor(color.RGBA{255, 0, 0, 255})
 	a.ctx.Fill()
