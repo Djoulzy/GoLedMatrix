@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/fogleman/gg v1.3.0
 	github.com/go-ini/ini v1.66.2
+	github.com/gorilla/mux v1.8.0
 	golang.org/x/exp v0.0.0-20190731235908-ec7cb31e5a56
 	golang.org/x/mobile v0.0.0-20211109191125-d61a72f26a1a
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c

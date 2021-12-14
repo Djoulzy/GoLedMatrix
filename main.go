@@ -4,18 +4,18 @@ import (
 	"GoLedMatrix/clog"
 	"GoLedMatrix/confload"
 	"GoLedMatrix/rgbmatrix"
+	"GoLedMatrix/server"
 )
 
-type ConfigData struct {
-	rgbmatrix.HardwareConfig
-	rgbmatrix.RuntimeOptions
-}
-
-var config = &ConfigData{}
+var config = &confload.ConfigData{}
 
 func main() {
 
 	confload.Load("config.ini", config)
+
+	if config.HTTPserver.Enabled {
+		server.StartHTTP(config)
+	}
 
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)

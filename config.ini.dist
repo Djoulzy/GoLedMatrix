@@ -22,3 +22,7 @@ GpioSlowdown            = 2
 Daemon                  = 0
 DropPrivileges          = 0
 DoGpioInit              = true
+
+[HTTPserver]
+Addr                    = localhost
+Enabled                 = true
