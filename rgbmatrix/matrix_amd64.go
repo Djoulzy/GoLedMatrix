@@ -3,6 +3,7 @@ package rgbmatrix
 import (
 	"fmt"
 
+	"GoLedMatrix/clog"
 	"GoLedMatrix/emulator"
 )
 
@@ -124,6 +125,7 @@ func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) 
 		}
 	}()
 
+	clog.Warn("matrix", "NewRGBLedMatrix", "Starting Emulator")
 	return buildMatrixEmulator(configHard), nil
 }
 
