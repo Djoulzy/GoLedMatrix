@@ -1,16 +1,20 @@
 package emulator
 
 import (
-	"fmt"
 	"image"
 	"image/color"
+	"log"
 	"os"
 	"sync"
 
-	"golang.org/x/exp/shiny/driver"
+	"gioui.org/app"
+	"gioui.org/io/system"
+	"gioui.org/layout"
+	"gioui.org/op"
+	"gioui.org/op/clip"
+	"gioui.org/op/paint"
+	"gioui.org/unit"
 	"golang.org/x/exp/shiny/screen"
-	"golang.org/x/mobile/event/paint"
-	"golang.org/x/mobile/event/size"
 )
 
 const DefaultPixelPitch = 12
@@ -26,9 +30,9 @@ type Emulator struct {
 	Margin                  int
 
 	leds []color.Color
-	w    screen.Window
-	s    screen.Screen
-	wg   sync.WaitGroup
+	w    *app.Window
+	// s    screen.Screen
+	wg sync.WaitGroup
 
 	isReady bool
 }
@@ -55,56 +59,80 @@ func NewEmulator(w, h, pixelPitch int, autoInit bool) *Emulator {
 func (e *Emulator) Init() {
 	e.leds = make([]color.Color, e.Width*e.Height)
 
-	e.wg.Add(1)
-	go driver.Main(e.mainWindowLoop)
-	e.wg.Wait()
+	// e.wg.Add(1)
+	// go driver.Main(e.mainWindowLoop)
+	// e.wg.Wait()
+
+	dims := e.matrixWithMarginsRect()
+	go func() {
+		w := app.NewWindow(
+			app.Size(unit.Dp(float32(dims.Max.X)), unit.Dp(float32(dims.Max.Y))),
+			app.Title(windowTitle),
+		)
+		if err := e.mainWindowLoop(w); err != nil {
+			log.Fatal(err)
+		}
+		os.Exit(0)
+	}()
+	app.Main()
 }
 
-func (e *Emulator) mainWindowLoop(s screen.Screen) {
-	var err error
-	e.s = s
-	// Calculate initial window size based on whatever our gutter/pixel pitch currently is.
-	dims := e.matrixWithMarginsRect()
-	e.w, err = s.NewWindow(&screen.NewWindowOptions{
-		Title:  windowTitle,
-		Width:  dims.Max.X,
-		Height: dims.Max.Y,
-	})
+func (e *Emulator) mainWindowLoop(w *app.Window) error {
+	// var err error
+	e.w = w
+	// // Calculate initial window size based on whatever our gutter/pixel pitch currently is.
+	// dims := e.matrixWithMarginsRect()
+	// e.w, err = s.NewWindow(&screen.NewWindowOptions{
+	// 	Title:  windowTitle,
+	// 	Width:  dims.Max.X,
+	// 	Height: dims.Max.Y,
+	// })
 
-	if err != nil {
-		panic(err)
-	}
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	defer e.w.Release()
-
-	var sz size.Event
+	// defer e.w.Release()
+	var ops op.Ops
 	for {
-		evn := e.w.NextEvent()
-		switch evn := evn.(type) {
-		case paint.Event:
-			e.drawContext(sz)
-			if e.isReady {
-				continue
-			}
-
-			e.Apply(make([]color.Color, e.Width*e.Height))
-			e.wg.Done()
-			e.isReady = true
-		case size.Event:
-			sz = evn
-
-		case error:
-			fmt.Fprintln(os.Stderr, e)
+		event := <-w.Events()
+		switch evt := event.(type) {
+		case system.DestroyEvent:
+			return evt.Err
+		case system.FrameEvent:
+			gtx := layout.NewContext(&ops, evt)
+			e.drawContext(gtx, evt)
+			evt.Frame(gtx.Ops)
 		}
 	}
+	// var sz size.Event
+	// for {
+	// 	evn := e.w.NextEvent()
+	// 	switch evn := evn.(type) {
+	// 	case paint.Event:
+	// 		e.drawContext(sz)
+	// 		if e.isReady {
+	// 			continue
+	// 		}
+
+	// 		e.Apply(make([]color.Color, e.Width*e.Height))
+	// 		e.wg.Done()
+	// 		e.isReady = true
+	// 	case size.Event:
+	// 		sz = evn
+
+	// 	case error:
+	// 		fmt.Fprintln(os.Stderr, e)
+	// 	}
+	// }
 }
 
-func (e *Emulator) drawContext(sz size.Event) {
-	e.updatePixelPitchForGutter(e.calculateGutterForViewableArea(sz.Size()))
+func (e *Emulator) drawContext(gtx layout.Context,sz system.FrameEvent) {
+	e.updatePixelPitchForGutter(e.calculateGutterForViewableArea(sz.Size))
 	// Fill entire background with white.
-	e.w.Fill(sz.Bounds(), color.White, screen.Src)
+	paint.Fill(gtx.Ops, color.NRGBA{R: 0xff, G: 0xfe, B: 0xe0, A: 0xff})
 	// Fill matrix display rectangle with the gutter color.
-	e.w.Fill(e.matrixWithMarginsRect(), e.GutterColor, screen.Src)
+	paint.FillShape(gtx.Ops, e.GutterColor, e.matrixWithMarginsRect())
 	// Set all LEDs to black.
 	e.Apply(make([]color.Color, e.Width*e.Height))
 }
@@ -134,10 +162,11 @@ func (e *Emulator) drawContext(sz size.Event) {
 //    L = LED
 
 // matrixWithMarginsRect Returns a Rectangle that describes entire emulated RGB Matrix, including margins.
-func (e *Emulator) matrixWithMarginsRect() image.Rectangle {
+func (e *Emulator) matrixWithMarginsRect() clip.Op {
 	upperLeftLED := e.ledRect(0, 0)
 	lowerRightLED := e.ledRect(e.Width-1, e.Height-1)
-	return image.Rect(upperLeftLED.Min.X-e.Margin, upperLeftLED.Min.Y-e.Margin, lowerRightLED.Max.X+e.Margin, lowerRightLED.Max.Y+e.Margin)
+	mShape := clip.Rect(image.Rect(upperLeftLED.Min.X-e.Margin, upperLeftLED.Min.Y-e.Margin, lowerRightLED.Max.X+e.Margin, lowerRightLED.Max.Y+e.Margin))
+	return mShape.Op()
 }
 
 // ledRect Returns a Rectangle for the LED at col and row.
