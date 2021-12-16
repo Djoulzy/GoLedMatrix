@@ -53,7 +53,7 @@ func (c *Client) Apply(leds []color.Color) error {
 	return c.client.Call("RPCMatrix.Apply", &ApplyArgs{Colors: leds}, &reply)
 }
 
-func (c *Client) Init() {
+func (c *Client) Start() {
 }
 
 // Render update the display with the data from the LED buffer

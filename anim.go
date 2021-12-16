@@ -19,6 +19,10 @@ type Animation struct {
 }
 
 func BouncingBall(m *rgbmatrix.Matrix) {
+
+	duration := time.Second
+	time.Sleep(duration)
+
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 

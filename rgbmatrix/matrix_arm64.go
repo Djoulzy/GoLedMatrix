@@ -288,7 +288,7 @@ func (c *RGBLedMatrix) Initialize() error {
 	return nil
 }
 
-func (c *RGBLedMatrix) Init() {
+func (c *RGBLedMatrix) Start() {
 }
 
 // Geometry returns the width and the height of the matrix

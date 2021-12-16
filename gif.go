@@ -7,6 +7,9 @@ import (
 )
 
 func displayGif(m *rgbmatrix.Matrix) {
+	duration := time.Second
+	time.Sleep(duration)
+
 	tk := rgbmatrix.NewToolKit(*m)
 	defer tk.Close()
 

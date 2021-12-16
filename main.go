@@ -22,10 +22,10 @@ func main() {
 	fatal(err)
 
 	clog.Trace("main", "main", "start")
-	// BouncingBall(&m)
-	// displayGif(&m)
-	m.Init()
+	go BouncingBall(&m)
+	// go displayGif(&m)
 	// go displayImage(m)
+	m.Start()
 }
 
 func fatal(err error) {

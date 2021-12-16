@@ -11,6 +11,10 @@ import (
 )
 
 func displayImage(m rgbmatrix.Matrix) {
+
+	duration := time.Second
+	time.Sleep(duration)
+
 	var d time.Duration = 10000000000
 
 	tk := rgbmatrix.NewToolKit(m)

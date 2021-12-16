@@ -1,7 +1,6 @@
 package emulator
 
 import (
-	"GoLedMatrix/clog"
 	"image"
 	"image/color"
 	"log"
@@ -21,6 +20,7 @@ const DefaultPixelPitch = 12
 const windowTitle = "RGB led matrix emulator"
 
 type Emulator struct {
+	mu                      sync.RWMutex
 	PixelPitch              int
 	Gutter                  int
 	Width                   int
@@ -38,6 +38,9 @@ type Emulator struct {
 }
 
 func ConvertColorToNRGBA(col color.Color) color.NRGBA {
+	if col == nil {
+		return color.NRGBA{0, 0, 0, 0}
+	}
 	rt, gt, bt, at := col.RGBA()
 	nrgba := color.NRGBA{}
 	nrgba.R = uint8(rt)
@@ -54,9 +57,10 @@ func NewEmulator(w, h, pixelPitch int, autoInit bool) *Emulator {
 		GutterColor:             ConvertColorToNRGBA(color.Gray{Y: 20}),
 		PixelPitchToGutterRatio: 2,
 		Margin:                  10,
+		isReady:                 false,
 	}
 	e.updatePixelPitchForGutter(pixelPitch / e.PixelPitchToGutterRatio)
-
+	e.leds = make([]color.Color, e.Width*e.Height)
 	// if autoInit {
 	// 	e.Init()
 	// }
@@ -66,17 +70,15 @@ func NewEmulator(w, h, pixelPitch int, autoInit bool) *Emulator {
 
 // Init initialize the emulator, creating a new Window and waiting until is
 // painted. If something goes wrong the function panics
-func (e *Emulator) Init() {
-	e.leds = make([]color.Color, e.Width*e.Height)
+func (e *Emulator) Start() {
 
 	// e.wg.Add(1)
 	// go driver.Main(e.mainWindowLoop)
 	// e.wg.Wait()
-
-	dims := e.matrixWithMarginsRect()
 	go func() {
+		dims := e.matrixWithMarginsRect()
 		w := app.NewWindow(
-			app.Size(unit.Dp(float32(dims.Max.X)), unit.Dp(float32(dims.Max.Y))),
+			app.Size(unit.Px(float32(dims.Max.X)), unit.Px(float32(dims.Max.Y))),
 			app.Title(windowTitle),
 		)
 		if err := e.mainWindowLoop(w); err != nil {
@@ -107,14 +109,14 @@ func (e *Emulator) mainWindowLoop(w *app.Window) error {
 	for {
 		event := <-w.Events()
 		switch evt := event.(type) {
-		case system.StageEvent:
 		case system.DestroyEvent:
 			return evt.Err
 		case system.FrameEvent:
-			clog.Trace("Emulator", "mainWindowLoop", "system.FrameEvent")
 			e.gtx = layout.NewContext(&ops, evt)
-			e.drawContext(e.gtx, evt)
+			// e.drawContext(e.gtx, evt)
+			e.Apply(nil)
 			evt.Frame(e.gtx.Ops)
+			e.isReady = true
 		}
 	}
 	// var sz size.Event
@@ -142,11 +144,11 @@ func (e *Emulator) mainWindowLoop(w *app.Window) error {
 func (e *Emulator) drawContext(gtx layout.Context, sz system.FrameEvent) {
 	e.updatePixelPitchForGutter(e.calculateGutterForViewableArea(sz.Size))
 	// Fill entire background with white.
-	paint.Fill(gtx.Ops, ConvertColorToNRGBA(color.White))
+	paint.Fill(gtx.Ops, ConvertColorToNRGBA(color.Black))
 	// Fill matrix display rectangle with the gutter color.
 	paint.FillShape(gtx.Ops, e.GutterColor, e.matrixWithMarginsRect().Op())
 	// Set all LEDs to black.
-	e.Apply(make([]color.Color, e.Width*e.Height))
+	e.Apply(nil)
 }
 
 // Some formulas that allowed me to better understand the drawable area. I found that the math was
@@ -210,8 +212,9 @@ func (e *Emulator) Geometry() (width, height int) {
 }
 
 func (e *Emulator) Apply(leds []color.Color) error {
-	defer func() { e.leds = make([]color.Color, e.Height*e.Width) }()
+	// defer func() { e.leds = make([]color.Color, e.Height*e.Width) }()
 
+	e.mu.Lock()
 	var c color.Color
 	for col := 0; col < e.Width; col++ {
 		for row := 0; row < e.Height; row++ {
@@ -219,14 +222,15 @@ func (e *Emulator) Apply(leds []color.Color) error {
 			paint.FillShape(e.gtx.Ops, ConvertColorToNRGBA(c), e.ledRect(col, row).Op())
 		}
 	}
-	clog.Test("Emulator", "Apply", "Apply")
+	e.mu.Unlock()
 	return nil
 }
 
 func (e *Emulator) Render() error {
-	clog.Test("Emulator", "Render", "Render")
-	e.Apply(e.leds)
-	e.w.Invalidate()
+	if e.isReady {
+		// e.Apply(nil)
+		e.w.Invalidate()
+	}
 	return nil
 }
 
@@ -234,12 +238,11 @@ func (e *Emulator) At(position int) color.Color {
 	if e.leds[position] == nil {
 		return color.Black
 	}
-
 	return e.leds[position]
 }
 
 func (e *Emulator) Set(position int, c color.Color) {
-	e.leds[position] = color.RGBAModel.Convert(c)
+	e.leds[position] = c // color.RGBAModel.Convert(c)
 }
 
 func (e *Emulator) Close() error {

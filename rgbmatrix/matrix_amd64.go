@@ -136,12 +136,8 @@ func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) 
 	}()
 
 	clog.Warn("matrix", "NewRGBLedMatrix", "Starting Emulator")
-	return buildMatrixEmulator(configHard), nil
-}
-
-func buildMatrixEmulator(config *HardwareConfig) Matrix {
-	w, h := config.geometry()
-	return emulator.NewEmulator(w, h, emulator.DefaultPixelPitch, true)
+	w, h := configHard.geometry()
+	return emulator.NewEmulator(w, h, emulator.DefaultPixelPitch, true), nil
 }
 
 // Initialize initialize library, must be called once before other functions are
@@ -180,7 +176,7 @@ func (c *RGBLedMatrix) Render() error {
 	return nil
 }
 
-func (c *RGBLedMatrix) Init() {
+func (c *RGBLedMatrix) Start() {
 }
 
 // At return an Color which allows access to the LED display data as
