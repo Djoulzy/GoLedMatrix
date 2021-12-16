@@ -10,10 +10,10 @@ import (
 	"time"
 )
 
-func displayImage(m *rgbmatrix.Matrix) {
+func displayImage(m rgbmatrix.Matrix) {
 	var d time.Duration = 10000000000
 
-	tk := rgbmatrix.NewToolKit(*m)
+	tk := rgbmatrix.NewToolKit(m)
 	defer tk.Close()
 
 	files, err := ioutil.ReadDir("./img")

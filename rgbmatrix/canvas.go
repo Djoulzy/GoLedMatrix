@@ -70,6 +70,7 @@ func (c *Canvas) Close() error {
 
 // Matrix is an interface that represent any RGB matrix, very useful for testing
 type Matrix interface {
+	Init()
 	Geometry() (width, height int)
 	At(position int) color.Color
 	Set(position int, c color.Color)

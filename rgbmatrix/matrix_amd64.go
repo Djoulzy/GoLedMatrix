@@ -180,6 +180,9 @@ func (c *RGBLedMatrix) Render() error {
 	return nil
 }
 
+func (c *RGBLedMatrix) Init() {
+}
+
 // At return an Color which allows access to the LED display data as
 // if it were a sequence of 24-bit RGB values.
 func (c *RGBLedMatrix) At(position int) color.Color {

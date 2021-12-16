@@ -101,6 +101,9 @@ func NewMatrixMock() *MatrixMock {
 	}
 }
 
+func (m *MatrixMock) Init() {
+}
+
 func (m *MatrixMock) Geometry() (width, height int) {
 	return 64, 32
 }

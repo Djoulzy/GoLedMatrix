@@ -288,6 +288,9 @@ func (c *RGBLedMatrix) Initialize() error {
 	return nil
 }
 
+func (c *RGBLedMatrix) Init() {
+}
+
 // Geometry returns the width and the height of the matrix
 func (c *RGBLedMatrix) Geometry() (width, height int) {
 	return c.width, c.height

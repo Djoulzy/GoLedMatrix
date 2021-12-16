@@ -7,7 +7,6 @@ require (
 	github.com/fogleman/gg v1.3.0
 	github.com/go-ini/ini v1.66.2
 	github.com/gorilla/mux v1.8.0
-	golang.org/x/exp v0.0.0-20210722180016-6781d3edade3
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
 )
 

@@ -24,7 +24,8 @@ func main() {
 	clog.Trace("main", "main", "start")
 	// BouncingBall(&m)
 	// displayGif(&m)
-	displayImage(&m)
+	m.Init()
+	// go displayImage(m)
 }
 
 func fatal(err error) {

@@ -57,9 +57,9 @@ func NewEmulator(w, h, pixelPitch int, autoInit bool) *Emulator {
 	}
 	e.updatePixelPitchForGutter(pixelPitch / e.PixelPitchToGutterRatio)
 
-	if autoInit {
-		e.Init()
-	}
+	// if autoInit {
+	// 	e.Init()
+	// }
 
 	return e
 }
@@ -107,6 +107,7 @@ func (e *Emulator) mainWindowLoop(w *app.Window) error {
 	for {
 		event := <-w.Events()
 		switch evt := event.(type) {
+		case system.StageEvent:
 		case system.DestroyEvent:
 			return evt.Err
 		case system.FrameEvent:
