@@ -12,7 +12,8 @@ var config = &confload.ConfigData{}
 func main() {
 
 	confload.Load("config.ini", config)
-
+	clog.LogLevel = 5
+	clog.StartLogging = true
 	if config.HTTPserver.Enabled {
 		server.StartHTTP(config)
 	}
@@ -20,9 +21,10 @@ func main() {
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)
 
-	BouncingBall(&m)
+	clog.Trace("main", "main", "start")
+	// BouncingBall(&m)
 	// displayGif(&m)
-	// displayImage(&m)
+	displayImage(&m)
 }
 
 func fatal(err error) {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoLedMatrix/clog"
 	"GoLedMatrix/rgbmatrix"
 	"image"
 	"io/ioutil"
@@ -21,7 +22,8 @@ func displayImage(m *rgbmatrix.Matrix) {
 	}
 
 	for _, finfo := range files {
-		f, err := os.Open("./img/"+finfo.Name())
+		clog.Test("main", "displayImage", "Render")
+		f, err := os.Open("./img/" + finfo.Name())
 		fatal(err)
 		img, _, err := image.Decode(f)
 

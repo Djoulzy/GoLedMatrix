@@ -1,6 +1,7 @@
 package rgbmatrix
 
 import (
+	"GoLedMatrix/clog"
 	"image"
 	"image/color"
 	"image/draw"
@@ -27,6 +28,7 @@ func NewCanvas(m Matrix) *Canvas {
 
 // Render update the display with the data from the LED buffer
 func (c *Canvas) Render() error {
+	clog.Test("rgbmatrix", "Canvas", "Render")
 	return c.m.Render()
 }
 

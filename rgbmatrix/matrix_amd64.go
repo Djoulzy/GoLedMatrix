@@ -2,6 +2,7 @@ package rgbmatrix
 
 import (
 	"fmt"
+	"image/color"
 
 	"GoLedMatrix/clog"
 	"GoLedMatrix/emulator"
@@ -113,6 +114,15 @@ const (
 	Interlaced  ScanMode = 1
 )
 
+// RGBLedMatrix matrix representation for ws281x
+type RGBLedMatrix struct {
+	Config *HardwareConfig
+
+	height int
+	width  int
+	leds   []uint32
+}
+
 // NewRGBLedMatrix returns a new matrix using the given size and config
 func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) (c Matrix, err error) {
 	defer func() {
@@ -132,4 +142,75 @@ func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) 
 func buildMatrixEmulator(config *HardwareConfig) Matrix {
 	w, h := config.geometry()
 	return emulator.NewEmulator(w, h, emulator.DefaultPixelPitch, true)
+}
+
+// Initialize initialize library, must be called once before other functions are
+// called.
+func (c *RGBLedMatrix) Initialize() error {
+	return nil
+}
+
+// Geometry returns the width and the height of the matrix
+func (c *RGBLedMatrix) Geometry() (width, height int) {
+	return c.width, c.height
+}
+
+// Apply set all the pixels to the values contained in leds
+func (c *RGBLedMatrix) Apply(leds []color.Color) error {
+	for position, l := range leds {
+		c.Set(position, l)
+	}
+
+	return c.Render()
+}
+
+// Render update the display with the data from the LED buffer
+func (c *RGBLedMatrix) Render() error {
+	clog.Test("rgbmatrix", "RGBLedMatrix", "Render")
+	w, h := c.Config.geometry()
+
+	// C.led_matrix_swap(
+	// 	c.matrix,
+	// 	c.buffer,
+	// 	C.int(w), C.int(h),
+	// 	(*C.uint32_t)(unsafe.Pointer(&c.leds[0])),
+	// )
+
+	c.leds = make([]uint32, w*h)
+	return nil
+}
+
+// At return an Color which allows access to the LED display data as
+// if it were a sequence of 24-bit RGB values.
+func (c *RGBLedMatrix) At(position int) color.Color {
+	return uint32ToColor(c.leds[position])
+}
+
+// Set set LED at position x,y to the provided 24-bit color value.
+func (c *RGBLedMatrix) Set(position int, color color.Color) {
+	c.leds[position] = uint32(colorToUint32(color))
+}
+
+// Close finalizes the ws281x interface
+func (c *RGBLedMatrix) Close() error {
+	return nil
+}
+
+func colorToUint32(c color.Color) uint32 {
+	if c == nil {
+		return 0
+	}
+
+	// A color's RGBA method returns values in the range [0, 65535]
+	red, green, blue, _ := c.RGBA()
+	return (red>>8)<<16 | (green>>8)<<8 | blue>>8
+}
+
+func uint32ToColor(u uint32) color.Color {
+	return color.RGBA{
+		uint8(u>>16) & 255,
+		uint8(u>>8) & 255,
+		uint8(u>>0) & 255,
+		0,
+	}
 }
