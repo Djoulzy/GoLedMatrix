@@ -1,6 +1,7 @@
-package main
+package scenario
 
 import (
+	"GoLedMatrix/clog"
 	"GoLedMatrix/rgbmatrix"
 	"image"
 	"image/color"
@@ -31,7 +32,7 @@ func BouncingBall(m *rgbmatrix.Matrix) {
 
 func NewAnimation(sz image.Point) *Animation {
 	f, err := os.Open("./img/robedog.jpg")
-	fatal(err)
+	clog.Fatal("scenario", "NewAnimation", err)
 	img, _, err := image.Decode(f)
 
 	return &Animation{
