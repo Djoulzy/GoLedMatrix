@@ -71,10 +71,6 @@ func NewEmulator(w, h, pixelPitch int, autoInit bool) *Emulator {
 // Init initialize the emulator, creating a new Window and waiting until is
 // painted. If something goes wrong the function panics
 func (e *Emulator) Start() {
-
-	// e.wg.Add(1)
-	// go driver.Main(e.mainWindowLoop)
-	// e.wg.Wait()
 	go func() {
 		dims := e.matrixWithMarginsRect()
 		w := app.NewWindow(
@@ -113,7 +109,7 @@ func (e *Emulator) mainWindowLoop(w *app.Window) error {
 			return evt.Err
 		case system.FrameEvent:
 			e.gtx = layout.NewContext(&ops, evt)
-			// e.drawContext(e.gtx, evt)
+			e.drawContext(e.gtx, evt)
 			e.Apply(nil)
 			evt.Frame(e.gtx.Ops)
 			e.isReady = true
@@ -148,7 +144,7 @@ func (e *Emulator) drawContext(gtx layout.Context, sz system.FrameEvent) {
 	// Fill matrix display rectangle with the gutter color.
 	paint.FillShape(gtx.Ops, e.GutterColor, e.matrixWithMarginsRect().Op())
 	// Set all LEDs to black.
-	e.Apply(nil)
+	// e.Apply(nil)
 }
 
 // Some formulas that allowed me to better understand the drawable area. I found that the math was
@@ -242,7 +238,7 @@ func (e *Emulator) At(position int) color.Color {
 }
 
 func (e *Emulator) Set(position int, c color.Color) {
-	e.leds[position] = c // color.RGBAModel.Convert(c)
+	e.leds[position] = color.RGBAModel.Convert(c)
 }
 
 func (e *Emulator) Close() error {

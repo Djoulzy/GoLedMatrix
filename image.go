@@ -2,6 +2,7 @@ package main
 
 import (
 	"GoLedMatrix/clog"
+	"GoLedMatrix/emulator"
 	"GoLedMatrix/rgbmatrix"
 	"image"
 	"io/ioutil"
@@ -10,14 +11,19 @@ import (
 	"time"
 )
 
-func displayImage(m rgbmatrix.Matrix) {
+func displayImage(m interface{}) {
 
-	duration := time.Second
-	time.Sleep(duration)
+	switch m.(type) {
+	case emulator.Emulator:
+		duration := time.Second
+		time.Sleep(duration)
+	case rgbmatrix.Matrix:
+	}
+	t := m.(rgbmatrix.Matrix)
 
 	var d time.Duration = 10000000000
 
-	tk := rgbmatrix.NewToolKit(m)
+	tk := rgbmatrix.NewToolKit(t)
 	defer tk.Close()
 
 	files, err := ioutil.ReadDir("./img")

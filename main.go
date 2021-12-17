@@ -4,6 +4,7 @@ import (
 	"GoLedMatrix/clog"
 	"GoLedMatrix/confload"
 	"GoLedMatrix/rgbmatrix"
+	"GoLedMatrix/scenario"
 	"GoLedMatrix/server"
 )
 
@@ -14,6 +15,7 @@ func main() {
 	confload.Load("config.ini", config)
 	clog.LogLevel = 5
 	clog.StartLogging = true
+
 	if config.HTTPserver.Enabled {
 		server.StartHTTP(config)
 	}
@@ -21,10 +23,9 @@ func main() {
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	fatal(err)
 
-	clog.Trace("main", "main", "start")
-	go BouncingBall(&m)
+	// go BouncingBall(&m)
 	// go displayGif(&m)
-	// go displayImage(m)
+	go scenario.Setup(m)
 	m.Start()
 }
 
