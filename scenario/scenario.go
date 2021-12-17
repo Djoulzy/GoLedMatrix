@@ -2,6 +2,7 @@ package scenario
 
 import (
 	"GoLedMatrix/clog"
+	"GoLedMatrix/confload"
 	"GoLedMatrix/emulator"
 	"GoLedMatrix/rgbmatrix"
 	"image"
@@ -12,7 +13,16 @@ import (
 )
 
 type Scenario struct {
-	tk *rgbmatrix.ToolKit
+	tk   *rgbmatrix.ToolKit
+	conf *confload.ConfigData
+	m    *rgbmatrix.Matrix
+	mode int
+}
+
+type ControlParams struct {
+	Param1 int    `json:"param1"`
+	Test   string `json:"test"`
+	Age    int    `json:"age"`
 }
 
 func (S *Scenario) slideShow() {
@@ -37,26 +47,28 @@ func (S *Scenario) slideShow() {
 	}
 }
 
-// func displayGif(m *rgbmatrix.Matrix) {
-// 	duration := time.Second
-// 	time.Sleep(duration)
+func (S *Scenario) displayGif() {
 
-// 	tk := rgbmatrix.NewToolKit(*m)
-// 	defer tk.Close()
+	f, err := os.Open("./anim/muppet.gif")
+	if err != nil {
+		clog.Fatal("scenario", "displayGif", err)
+	}
 
-// 	f, err := os.Open("./anim/muppet.gif")
-// 	fatal(err)
+	close, err := S.tk.PlayGIF(f)
+	if err != nil {
+		clog.Fatal("scenario", "displayGif", err)
+	}
 
-// 	close, err := tk.PlayGIF(f)
-// 	fatal(err)
+	time.Sleep(time.Second * 30)
+	close <- true
+}
 
-// 	time.Sleep(time.Second * 30)
-// 	close <- true
-// }
+func (S *Scenario) Control(params *ControlParams) {
+	clog.Test("Scenario", "Control", "Params age: %d", params.Age)
+	S.mode = 2
+}
 
-func Setup(m interface{}) {
-	modeLoop := Scenario{}
-
+func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	switch m.(type) {
 	case emulator.Emulator:
 		duration := time.Second * 2
@@ -65,11 +77,19 @@ func Setup(m interface{}) {
 	}
 	t := m.(rgbmatrix.Matrix)
 
-	modeLoop.tk = rgbmatrix.NewToolKit(t)
-	defer modeLoop.tk.Close()
+	S.m = &t
+	S.conf = config
+	S.tk = rgbmatrix.NewToolKit(t)
+	defer S.tk.Close()
 
-	clog.Trace("scenario", "Setup", "Starting default mode")
+	S.mode = 1
+
 	for {
-		modeLoop.slideShow()
+		switch S.mode {
+		case 1:
+			S.slideShow()
+		case 2:
+			S.displayGif()
+		}
 	}
 }

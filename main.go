@@ -16,17 +16,18 @@ func main() {
 	clog.LogLevel = 5
 	clog.StartLogging = true
 
-	if config.HTTPserver.Enabled {
-		server.StartHTTP(config)
-	}
-
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	if err != nil {
 		clog.Fatal("GoLedMatrix", "main", err)
 	}
 
-	// go BouncingBall(&m)
-	// go displayGif(&m)
-	go scenario.Setup(m)
+	var scen scenario.Scenario
+	var http server.HTTP
+
+	if config.HTTPserver.Enabled {
+		http.StartHTTP(config, &scen)
+	}
+
+	go scen.Run(m, config)
 	m.Start()
 }
