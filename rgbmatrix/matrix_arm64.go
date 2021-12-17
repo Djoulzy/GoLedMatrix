@@ -46,8 +46,6 @@ import (
 	"image/color"
 	"os"
 	"unsafe"
-
-	"GoLedMatrix/emulator"
 )
 
 // DefaultConfig default WS281x configuration
@@ -247,10 +245,6 @@ func NewRGBLedMatrix(configHard *HardwareConfig, configRuntime *RuntimeOptions) 
 		}
 	}()
 
-	if isMatrixEmulator() {
-		return buildMatrixEmulator(configHard), nil
-	}
-
 	w, h := configHard.geometry()
 	// m := C.led_matrix_create_from_options(configHard.toC(), nil, nil)
 	m := C.led_matrix_create_from_options_and_rt_options(configHard.toC(), configRuntime.toC())
@@ -275,11 +269,6 @@ func isMatrixEmulator() bool {
 	}
 
 	return false
-}
-
-func buildMatrixEmulator(config *HardwareConfig) Matrix {
-	w, h := config.geometry()
-	return emulator.NewEmulator(w, h, emulator.DefaultPixelPitch, true)
 }
 
 // Initialize initialize library, must be called once before other functions are
