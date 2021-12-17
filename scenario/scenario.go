@@ -24,7 +24,6 @@ func (S *Scenario) slideShow() {
 	}
 
 	for _, finfo := range files {
-		clog.Test("main", "displayImage", "Render")
 		f, err := os.Open("./img/" + finfo.Name())
 		if err != nil {
 			clog.Fatal("scenario", "slideShow", err)
