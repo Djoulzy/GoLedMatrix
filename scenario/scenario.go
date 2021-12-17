@@ -59,7 +59,7 @@ func Setup(m interface{}) {
 
 	switch m.(type) {
 	case emulator.Emulator:
-		duration := time.Second
+		duration := time.Second * 2
 		time.Sleep(duration)
 	case rgbmatrix.Matrix:
 	}
