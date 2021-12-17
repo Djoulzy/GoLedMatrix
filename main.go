@@ -21,17 +21,10 @@ func main() {
 	}
 
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
-	fatal(err)
+	clog.Fatal("GoLedMatrix", "main", err)
 
 	// go BouncingBall(&m)
 	// go displayGif(&m)
 	go scenario.Setup(m)
 	m.Start()
-}
-
-func fatal(err error) {
-	if err != nil {
-		clog.Fatal("GoLedMatrix", "main", err)
-		panic(err)
-	}
 }

@@ -69,6 +69,7 @@ func Setup(m interface{}) {
 	modeLoop.tk = rgbmatrix.NewToolKit(t)
 	defer modeLoop.tk.Close()
 
+	clog.Trace("scenario", "Setup", "Starting default mode")
 	for {
 		modeLoop.slideShow()
 	}
