@@ -167,8 +167,8 @@ func (tk *ToolKit) DrawText(text []string) {
 		return
 	}
 
-	// Initialize the context.
-	fg, bg := image.NewUniform(color.RGBA{0xff, 0x00, 0x00, 0xff}), image.Black
+	// Initialize the context
+	fg, bg := image.NewUniform(color.RGBA{0xff, 0xe5, 0x1E, 0xff}), image.Black
 	// ruler := color.RGBA{0xdd, 0xdd, 0xdd, 0xff}
 
 	rgba := image.NewRGBA(image.Rect(0, 0, 128, 128))
@@ -194,7 +194,7 @@ func (tk *ToolKit) DrawText(text []string) {
 	// }
 
 	// Draw the text.
-	x := rand.Intn(60) + 1
+	x := rand.Intn(55) + 1
 	y := rand.Intn(100) + 1
 	pt := freetype.Pt(x, y+int(c.PointToFixed(size)>>6))
 	for _, s := range text {
