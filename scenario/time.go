@@ -26,12 +26,11 @@ func (S *Scenario) HorloLed() {
 	ctx := gg.NewContext(size.X, size.Y)
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
 
-	ctx.LoadFontFace("./ttf/Open24DisplaySt.ttf", 40)
+	ctx.LoadFontFace("./ttf/digital/frozencrystal.ttf", 35)
 	ctx.SetColor(color.Black)
 	ctx.Clear()
 
-	ctx.SetColor(color.RGBA{255, 0, 0, 255})
-
+	ctx.SetColor(color.White)
 	var t, x, y float64
 	var sec int
 	r := float64(center.Y) - 8
@@ -40,7 +39,9 @@ func (S *Scenario) HorloLed() {
 		y = float64(center.Y) + r*math.Sin(t)
 		ctx.DrawPoint(x, y, 1)
 	}
+	ctx.Stroke()
 
+	ctx.SetColor(color.RGBA{255, 0, 0, 255})
 	actual := time.Now()
 	timeString := actual.Format("15:04")
 	sec = 0
