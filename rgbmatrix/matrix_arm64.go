@@ -119,6 +119,7 @@ func (c *HardwareConfig) geometry() (width, height int) {
 		w = c.Cols * (c.ChainLength / 2)
 		h = c.Rows * 2 * c.Parallel
 	case "V-mapper":
+		fallthrough
 	case "V-mapper:Z":
 		w = c.Cols * c.Parallel
 		h = c.Rows * c.ChainLength
