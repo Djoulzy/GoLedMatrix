@@ -22,11 +22,11 @@ func (S *Scenario) SimpleTime(text string) {
 }
 
 func (S *Scenario) HorloLed() {
-	actual := time.Now()
 	size := S.tk.Canvas.Bounds().Max
 	ctx := gg.NewContext(size.X, size.Y)
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
 
+	ctx.LoadFontFace("./ttf/Open24DisplaySt.ttf", 40)
 	ctx.SetColor(color.Black)
 	ctx.Clear()
 
@@ -40,6 +40,9 @@ func (S *Scenario) HorloLed() {
 		y = float64(center.Y) + r*math.Sin(t)
 		ctx.DrawPoint(x, y, 1)
 	}
+
+	actual := time.Now()
+	timeString := actual.Format("15:04")
 	sec = 0
 	r = float64(center.Y) - 2
 	for t = 0; t <= 2*math.Pi; t += (2 * math.Pi) / 60 {
@@ -51,7 +54,11 @@ func (S *Scenario) HorloLed() {
 			break
 		}
 	}
-
 	ctx.Stroke()
+
+	timeWidth, timeHeight := ctx.MeasureString(timeString)
+
+	ctx.DrawString(timeString, float64(center.X)-(timeWidth/2), float64(center.Y)+(timeHeight/2))
+
 	S.tk.PlayImage(ctx.Image(), time.Second)
 }
