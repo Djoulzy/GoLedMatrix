@@ -145,15 +145,15 @@ func (tk *ToolKit) PlayGIF(r io.Reader) (chan bool, error) {
 func (tk *ToolKit) DrawText(text []string) {
 	var dpi float64
 	var fontfile string
-	var hinting string
+	var hinting string //none | full
 	var size float64
 	var spacing float64
 
 	dpi = 72
 	fontfile = "./ttf/orange_juice.ttf"
-	hinting = "none"
+	hinting = "full"
 	size = 24
-	spacing = 1
+	spacing = 0
 
 	fontBytes, err := ioutil.ReadFile(fontfile)
 	if err != nil {
@@ -193,7 +193,9 @@ func (tk *ToolKit) DrawText(text []string) {
 	// }
 
 	// Draw the text.
-	pt := freetype.Pt(10, 10+int(c.PointToFixed(size)>>6))
+	x := 0
+	y := 0
+	pt := freetype.Pt(x, y+int(c.PointToFixed(size)>>6))
 	for _, s := range text {
 		_, err = c.DrawString(s, pt)
 		if err != nil {
