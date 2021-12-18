@@ -8,7 +8,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"time"
 
 	"github.com/golang/freetype"
@@ -143,18 +142,9 @@ func (tk *ToolKit) PlayGIF(r io.Reader) (chan bool, error) {
 	return tk.PlayImages(images, delay, gif.LoopCount), nil
 }
 
-func (tk *ToolKit) DrawText(text []string) {
-	var dpi float64
-	var fontfile string
-	var hinting string //none | full
-	var size float64
-	var spacing float64
-
-	dpi = 72
-	fontfile = "./ttf/orange_juice.ttf"
-	hinting = "full"
-	size = 24
-	spacing = 0
+func (tk *ToolKit) DrawText(lines []string, x, y int, fontfile string, size, spacing float64) {
+	dpi := 72
+	hinting := "none"
 
 	fontBytes, err := ioutil.ReadFile(fontfile)
 	if err != nil {
@@ -171,10 +161,10 @@ func (tk *ToolKit) DrawText(text []string) {
 	fg, bg := image.NewUniform(color.RGBA{0xff, 0xe5, 0x1E, 0xff}), image.Black
 	// ruler := color.RGBA{0xdd, 0xdd, 0xdd, 0xff}
 
-	rgba := image.NewRGBA(image.Rect(0, 0, 128, 128))
+	rgba := image.NewRGBA(image.Rect(0, 0, tk.Canvas.w, tk.Canvas.h))
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 	c := freetype.NewContext()
-	c.SetDPI(dpi)
+	c.SetDPI(float64(dpi))
 	c.SetFont(f)
 	c.SetFontSize(size)
 	c.SetClip(rgba.Bounds())
@@ -187,17 +177,9 @@ func (tk *ToolKit) DrawText(text []string) {
 		c.SetHinting(font.HintingFull)
 	}
 
-	// Draw the guidelines.
-	// for i := 0; i < 200; i++ {
-	// 	rgba.Set(10, 10+i, ruler)
-	// 	rgba.Set(10+i, 10, ruler)
-	// }
-
 	// Draw the text.
-	x := rand.Intn(55) + 1
-	y := rand.Intn(100) + 1
 	pt := freetype.Pt(x, y+int(c.PointToFixed(size)>>6))
-	for _, s := range text {
+	for _, s := range lines {
 		_, err = c.DrawString(s, pt)
 		if err != nil {
 			log.Println(err)
@@ -206,7 +188,7 @@ func (tk *ToolKit) DrawText(text []string) {
 		pt.Y += c.PointToFixed(size * spacing)
 	}
 
-	tk.PlayImage(rgba, 1000000000)
+	tk.PlayImage(rgba, time.Second)
 }
 
 // Close close the toolkit and the inner canvas

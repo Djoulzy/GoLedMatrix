@@ -1,3 +1,4 @@
+//go:build !arm64
 // +build !arm64
 
 package rgbmatrix
@@ -5,6 +6,7 @@ package rgbmatrix
 import (
 	"fmt"
 	"image/color"
+	"strings"
 
 	"GoLedMatrix/clog"
 	"GoLedMatrix/emulator"
@@ -72,8 +74,32 @@ type HardwareConfig struct {
 }
 
 func (c *HardwareConfig) geometry() (width, height int) {
-	// return c.Cols * c.ChainLength, c.Rows * c.Parallel
-	return 128, 128
+	var w, h int
+
+	mapper := strings.Split(c.PixelMapperConfig, ";")
+	switch mapper[0] {
+	case "U-mapper":
+		w = c.Cols * (c.ChainLength / 2)
+		h = c.Rows * 2 * c.Parallel
+	case "V-mapper":
+	case "V-mapper:Z":
+		w = c.Cols * c.Parallel
+		h = c.Rows * c.ChainLength
+	case "Rotate:90":
+		h = c.Cols * c.ChainLength
+		w = c.Rows * c.Parallel
+	default:
+		w = c.Cols * c.ChainLength
+		h = c.Rows * c.Parallel
+	}
+
+	if len(mapper) > 1 {
+		if mapper[1] == "Rotate:90" {
+			return h, w
+		}
+	}
+
+	return w, h
 }
 
 type RuntimeOptions struct {

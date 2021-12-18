@@ -53,14 +53,6 @@ func (S *Scenario) slideShow() {
 	}
 }
 
-func (S *Scenario) drawText(text string) {
-	actual := time.Now()
-	var test = make([]string, 10)
-
-	test[0] = actual.Format("15:04:05")
-	S.tk.DrawText(test)
-}
-
 func (S *Scenario) displayGif() {
 
 	f, err := os.Open("./anim/muppet.gif")
@@ -107,7 +99,9 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 		case 2:
 			S.displayGif()
 		case 3:
-			S.drawText("test")
+			S.HorloLed()
+		case 4:
+			S.BouncingBall()
 		}
 	}
 }

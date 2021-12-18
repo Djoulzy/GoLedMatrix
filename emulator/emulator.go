@@ -88,21 +88,8 @@ func (e *Emulator) Start() {
 }
 
 func (e *Emulator) mainWindowLoop(w *app.Window) error {
-	// var err error
 	e.w = w
-	// // Calculate initial window size based on whatever our gutter/pixel pitch currently is.
-	// dims := e.matrixWithMarginsRect()
-	// e.w, err = s.NewWindow(&screen.NewWindowOptions{
-	// 	Title:  windowTitle,
-	// 	Width:  dims.Max.X,
-	// 	Height: dims.Max.Y,
-	// })
 
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// defer e.w.Release()
 	var ops op.Ops
 	for {
 		event := <-w.Events()
@@ -117,26 +104,6 @@ func (e *Emulator) mainWindowLoop(w *app.Window) error {
 			e.isReady = true
 		}
 	}
-	// var sz size.Event
-	// for {
-	// 	evn := e.w.NextEvent()
-	// 	switch evn := evn.(type) {
-	// 	case paint.Event:
-	// 		e.drawContext(sz)
-	// 		if e.isReady {
-	// 			continue
-	// 		}
-
-	// 		e.Apply(make([]color.Color, e.Width*e.Height))
-	// 		e.wg.Done()
-	// 		e.isReady = true
-	// 	case size.Event:
-	// 		sz = evn
-
-	// 	case error:
-	// 		fmt.Fprintln(os.Stderr, e)
-	// 	}
-	// }
 }
 
 func (e *Emulator) drawContext(gtx layout.Context, sz system.FrameEvent) {

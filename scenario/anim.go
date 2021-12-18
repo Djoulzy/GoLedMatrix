@@ -1,11 +1,8 @@
 package scenario
 
 import (
-	"GoLedMatrix/clog"
-	"GoLedMatrix/rgbmatrix"
 	"image"
 	"image/color"
-	"os"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -16,30 +13,18 @@ type Animation struct {
 	position image.Point
 	dir      image.Point
 	stroke   int
-	bground  image.Image
 }
 
-func BouncingBall(m *rgbmatrix.Matrix) {
-
-	duration := time.Second
-	time.Sleep(duration)
-
-	tk := rgbmatrix.NewToolKit(*m)
-	defer tk.Close()
-
-	tk.PlayAnimation(NewAnimation(image.Point{128, 128}))
+func (S *Scenario) BouncingBall() {
+	size := S.tk.Canvas.Bounds().Max
+	S.tk.PlayAnimation(NewAnimation(size))
 }
 
 func NewAnimation(sz image.Point) *Animation {
-	f, err := os.Open("./img/robedog.jpg")
-	clog.Fatal("scenario", "NewAnimation", err)
-	img, _, err := image.Decode(f)
-
 	return &Animation{
-		ctx:     gg.NewContext(sz.X, sz.Y),
-		dir:     image.Point{5, 1},
-		stroke:  5,
-		bground: img,
+		ctx:    gg.NewContext(sz.X, sz.Y),
+		dir:    image.Point{5, 1},
+		stroke: 5,
 	}
 }
 
@@ -49,7 +34,6 @@ func (a *Animation) Next() (image.Image, <-chan time.Time, error) {
 	a.ctx.SetColor(color.Black)
 	a.ctx.Clear()
 
-	a.ctx.DrawImage(a.bground, 0, 0)
 	a.ctx.DrawCircle(float64(a.position.X), float64(a.position.Y), float64(a.stroke))
 	a.ctx.SetColor(color.RGBA{255, 0, 0, 255})
 	a.ctx.Fill()
