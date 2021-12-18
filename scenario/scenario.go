@@ -54,11 +54,10 @@ func (S *Scenario) slideShow() {
 }
 
 func (S *Scenario) drawText(text string) {
+	actual := time.Now()
 	var test = make([]string, 10)
 
-	test[0] = text
-	test[1] = "OK"
-	test[2] = "Ca marche"
+	test[0] = actual.Format("15:04:05")
 	S.tk.DrawText(test)
 }
 
