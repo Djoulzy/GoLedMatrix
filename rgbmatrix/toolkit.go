@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"time"
 
 	"github.com/golang/freetype"
@@ -193,8 +194,8 @@ func (tk *ToolKit) DrawText(text []string) {
 	// }
 
 	// Draw the text.
-	x := 0
-	y := 0
+	x := rand.Intn(60) + 1
+	y := rand.Intn(100) + 1
 	pt := freetype.Pt(x, y+int(c.PointToFixed(size)>>6))
 	for _, s := range text {
 		_, err = c.DrawString(s, pt)
