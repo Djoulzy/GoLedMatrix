@@ -26,7 +26,7 @@ func (S *Scenario) HorloLed() {
 	ctx := gg.NewContext(size.X, size.Y)
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
 
-	ctx.LoadFontFace("./ttf/digital/frozencrystal.ttf", 35)
+	ctx.LoadFontFace("./ttf/digital/TickingTimebomb.ttf", 38)
 	ctx.SetColor(color.Black)
 	ctx.Clear()
 
