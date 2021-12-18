@@ -2,6 +2,7 @@ package rgbmatrix
 
 import (
 	"image"
+	"image/color"
 	"image/draw"
 	"image/gif"
 	"io"
@@ -147,14 +148,12 @@ func (tk *ToolKit) DrawText(text []string) {
 	var hinting string
 	var size float64
 	var spacing float64
-	var wonb bool
 
 	dpi = 72
 	fontfile = "./ttf/orange_juice.ttf"
 	hinting = "none"
-	size = 44
-	spacing = 1.5
-	wonb = false
+	size = 24
+	spacing = 1
 
 	fontBytes, err := ioutil.ReadFile(fontfile)
 	if err != nil {
@@ -168,13 +167,10 @@ func (tk *ToolKit) DrawText(text []string) {
 	}
 
 	// Initialize the context.
-	fg, bg := image.White, image.Black
+	fg, bg := image.NewUniform(color.RGBA{0xff, 0x00, 0x00, 0xff}), image.Black
 	// ruler := color.RGBA{0xdd, 0xdd, 0xdd, 0xff}
-	if wonb {
-		fg, bg = image.White, image.Black
-		// ruler = color.RGBA{0x22, 0x22, 0x22, 0xff}
-	}
-	rgba := image.NewRGBA(image.Rect(0, 0, 640, 480))
+
+	rgba := image.NewRGBA(image.Rect(0, 0, 128, 128))
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 	c := freetype.NewContext()
 	c.SetDPI(dpi)
