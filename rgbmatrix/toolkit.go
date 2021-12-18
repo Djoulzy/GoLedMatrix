@@ -5,7 +5,12 @@ import (
 	"image/draw"
 	"image/gif"
 	"io"
+	"io/ioutil"
+	"log"
 	"time"
+
+	"github.com/golang/freetype"
+	"golang.org/x/image/font"
 )
 
 // ToolKit is a convinient set of function to operate with a led of Matrix
@@ -134,6 +139,75 @@ func (tk *ToolKit) PlayGIF(r io.Reader) (chan bool, error) {
 	}
 
 	return tk.PlayImages(images, delay, gif.LoopCount), nil
+}
+
+func (tk *ToolKit) DrawText(text []string) {
+	var dpi float64
+	var fontfile string
+	var hinting string
+	var size float64
+	var spacing float64
+	var wonb bool
+
+	dpi = 72
+	fontfile = "./ttf/orange_juice.ttf"
+	hinting = "none"
+	size = 44
+	spacing = 1.5
+	wonb = false
+
+	fontBytes, err := ioutil.ReadFile(fontfile)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	f, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	// Initialize the context.
+	fg, bg := image.White, image.Black
+	// ruler := color.RGBA{0xdd, 0xdd, 0xdd, 0xff}
+	if wonb {
+		fg, bg = image.White, image.Black
+		// ruler = color.RGBA{0x22, 0x22, 0x22, 0xff}
+	}
+	rgba := image.NewRGBA(image.Rect(0, 0, 640, 480))
+	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
+	c := freetype.NewContext()
+	c.SetDPI(dpi)
+	c.SetFont(f)
+	c.SetFontSize(size)
+	c.SetClip(rgba.Bounds())
+	c.SetDst(rgba)
+	c.SetSrc(fg)
+	switch hinting {
+	default:
+		c.SetHinting(font.HintingNone)
+	case "full":
+		c.SetHinting(font.HintingFull)
+	}
+
+	// Draw the guidelines.
+	// for i := 0; i < 200; i++ {
+	// 	rgba.Set(10, 10+i, ruler)
+	// 	rgba.Set(10+i, 10, ruler)
+	// }
+
+	// Draw the text.
+	pt := freetype.Pt(10, 10+int(c.PointToFixed(size)>>6))
+	for _, s := range text {
+		_, err = c.DrawString(s, pt)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		pt.Y += c.PointToFixed(size * spacing)
+	}
+
+	tk.PlayImage(rgba, 1000000000)
 }
 
 // Close close the toolkit and the inner canvas

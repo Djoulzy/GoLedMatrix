@@ -17,6 +17,7 @@ type Scenario struct {
 	conf *confload.ConfigData
 	m    *rgbmatrix.Matrix
 	mode int
+	quit chan bool
 }
 
 type ControlParams struct {
@@ -34,17 +35,31 @@ func (S *Scenario) slideShow() {
 	}
 
 	for _, finfo := range files {
-		f, err := os.Open("./img/" + finfo.Name())
-		if err != nil {
-			clog.Fatal("scenario", "slideShow", err)
-		}
-		img, _, err := image.Decode(f)
+		select {
+		case <-S.quit:
+			return
+		default:
+			f, err := os.Open("./img/" + finfo.Name())
+			if err != nil {
+				clog.Fatal("scenario", "slideShow", err)
+			}
+			img, _, err := image.Decode(f)
 
-		err = S.tk.PlayImage(img, d)
-		if err != nil {
-			clog.Fatal("scenario", "slideShow", err)
+			err = S.tk.PlayImage(img, d)
+			if err != nil {
+				clog.Fatal("scenario", "slideShow", err)
+			}
 		}
 	}
+}
+
+func (S *Scenario) drawText(text string) {
+	var test = make([]string, 10)
+
+	test[0] = text
+	test[1] = "OK"
+	test[2] = "Ca marche"
+	S.tk.DrawText(test)
 }
 
 func (S *Scenario) displayGif() {
@@ -66,6 +81,7 @@ func (S *Scenario) displayGif() {
 func (S *Scenario) Control(params *ControlParams) {
 	clog.Test("Scenario", "Control", "Params age: %d", params.Age)
 	S.mode = 2
+	S.quit <- true
 }
 
 func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
@@ -82,7 +98,8 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	S.tk = rgbmatrix.NewToolKit(t)
 	defer S.tk.Close()
 
-	S.mode = 1
+	S.mode = 3
+	S.quit = make(chan bool, 0)
 
 	for {
 		switch S.mode {
@@ -90,6 +107,8 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 			S.slideShow()
 		case 2:
 			S.displayGif()
+		case 3:
+			S.drawText("test")
 		}
 	}
 }
