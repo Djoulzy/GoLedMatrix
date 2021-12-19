@@ -35,7 +35,7 @@ func (S *Scenario) FancyClock() {
 	timeHourWidth, _ := ctx.MeasureString(timeHour)
 	timeMinuteWidth, timeMinuteHeight := ctx.MeasureString(timeMinute)
 
-	ctx.SetColor(color.RGBA{255, 170, 0, 255})
+	ctx.SetColor(color.RGBA{255, 131, 0, 255})
 	ctx.DrawString(timeHour, float64(center.X)-(timeHourWidth/2), float64(center.Y))
 	ctx.SetColor(color.RGBA{123, 224, 222, 255})
 	ctx.DrawString(timeMinute, float64(center.X)-(timeMinuteWidth/2), float64(center.Y)+20+timeMinuteHeight)
