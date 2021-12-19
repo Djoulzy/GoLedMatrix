@@ -13,19 +13,25 @@ type Animation struct {
 	position image.Point
 	dir      image.Point
 	stroke   int
+	Quit     chan bool
 }
 
 func (S *Scenario) BouncingBall() {
 	size := S.tk.Canvas.Bounds().Max
-	S.tk.PlayAnimation(NewAnimation(size))
+	S.tk.PlayAnimation(NewAnimation(size, S.quit))
 }
 
-func NewAnimation(sz image.Point) *Animation {
+func NewAnimation(sz image.Point, quit chan bool) *Animation {
 	return &Animation{
 		ctx:    gg.NewContext(sz.X, sz.Y),
 		dir:    image.Point{5, 1},
 		stroke: 5,
+		Quit:   quit,
 	}
+}
+
+func (a *Animation) Init() chan bool {
+	return a.Quit
 }
 
 func (a *Animation) Next() (image.Image, <-chan time.Time, error) {

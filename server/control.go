@@ -44,16 +44,18 @@ var homeTemplate = template.Must(template.New("").Parse(`
         </script>
     </head>
     <body>
-        <button id="test" type="button">Test</button>
+        <button type="button" class="modeSelect" data-mode="1">slideShow</button>
+        <button type="button" class="modeSelect" data-mode="2">displayGif</button>
+        <button type="button" class="modeSelect" data-mode="3">HorloLed</button>
+        <button type="button" class="modeSelect" data-mode="4">BouncingBall</button>
 
         <script>
             $(document).ready(function() {
 
-                $("#test").on("click", function() {
+                $(".modeSelect").on("click", function(e) {
+                    var mode = $(e.target).data("mode")
                     const params = {
-                        param1: 12,
-                        test: "toto",
-                        age: 50
+                        mode: mode,
                     }
                     $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
 

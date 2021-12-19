@@ -21,9 +21,7 @@ type Scenario struct {
 }
 
 type ControlParams struct {
-	Param1 int    `json:"param1"`
-	Test   string `json:"test"`
-	Age    int    `json:"age"`
+	Mode int `json:"mode"`
 }
 
 func (S *Scenario) slideShow() {
@@ -61,17 +59,18 @@ func (S *Scenario) displayGif() {
 	}
 
 	close, err := S.tk.PlayGIF(f)
-	if err != nil {
-		clog.Fatal("scenario", "displayGif", err)
+	for {
+		select {
+		case <-S.quit:
+			close <- true
+			return
+		}
 	}
-
-	time.Sleep(time.Second * 30)
-	close <- true
 }
 
 func (S *Scenario) Control(params *ControlParams) {
-	clog.Test("Scenario", "Control", "Params age: %d", params.Age)
-	S.mode = 2
+	clog.Test("Scenario", "Control", "Starting mode: %d", params.Mode)
+	S.mode = params.Mode
 	S.quit <- true
 }
 

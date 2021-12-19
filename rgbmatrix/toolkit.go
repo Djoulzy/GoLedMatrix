@@ -50,6 +50,7 @@ func (tk *ToolKit) PlayImage(i image.Image, delay time.Duration) error {
 }
 
 type Animation interface {
+	Init() chan bool
 	Next() (image.Image, <-chan time.Time, error)
 }
 
@@ -59,23 +60,23 @@ func (tk *ToolKit) PlayAnimation(a Animation) error {
 	var err error
 	var i image.Image
 	var n <-chan time.Time
+	quit := a.Init()
 
 	for {
-		i, n, err = a.Next()
-		if err != nil {
-			break
-		}
+		select {
+		case <-quit:
+			return nil;
+		default:
+			i, n, err = a.Next()
+			if err != nil {
+				break
+			}
 
-		if err := tk.PlayImageUntil(i, n); err != nil {
-			return err
+			if err := tk.PlayImageUntil(i, n); err != nil {
+				return err
+			}
 		}
 	}
-
-	if err == io.EOF {
-		return nil
-	}
-
-	return err
 }
 
 // PlayImageUntil draws the given image until is notified to stop
