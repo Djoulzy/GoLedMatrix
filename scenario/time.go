@@ -21,6 +21,28 @@ func (S *Scenario) SimpleTime(text string) {
 	S.tk.DrawText(test, x, y, "./ttf/Perform.ttf", 12, 1)
 }
 
+func (S *Scenario) FancyClock() {
+	size := S.tk.Canvas.Bounds().Max
+	ctx := gg.NewContext(size.X, size.Y)
+	center := image.Point{X: size.X / 2, Y: size.Y / 2}
+	ctx.LoadFontFace("./ttf/modern/HappyBomb.ttf", 55)
+	ctx.SetColor(color.Black)
+	ctx.Clear()
+
+	actual := time.Now()
+	timeHour := actual.Format("15")
+	timeMinute := actual.Format("04")
+	timeHourWidth, _ := ctx.MeasureString(timeHour)
+	timeMinuteWidth, timeMinuteHeight := ctx.MeasureString(timeMinute)
+
+	ctx.SetColor(color.RGBA{255, 170, 0, 255})
+	ctx.DrawString(timeHour, float64(center.X)-(timeHourWidth/2), float64(center.Y))
+	ctx.SetColor(color.RGBA{123, 224, 222, 255})
+	ctx.DrawString(timeMinute, float64(center.X)-(timeMinuteWidth/2), float64(center.Y)+20+timeMinuteHeight)
+
+	S.tk.PlayImage(ctx.Image(), time.Second)
+}
+
 func (S *Scenario) HorloLed() {
 	size := S.tk.Canvas.Bounds().Max
 	ctx := gg.NewContext(size.X, size.Y)
