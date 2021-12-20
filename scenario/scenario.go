@@ -88,7 +88,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	S.tk = rgbmatrix.NewToolKit(t)
 	defer S.tk.Close()
 
-	S.mode = 5
+	S.mode = 3
 	S.quit = make(chan bool, 0)
 
 	for {
