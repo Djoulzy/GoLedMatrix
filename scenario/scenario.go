@@ -25,7 +25,7 @@ type ControlParams struct {
 }
 
 func (S *Scenario) slideShow() {
-	var d time.Duration = 1000000000
+	var d time.Duration = time.Second * 3
 
 	files, err := ioutil.ReadDir("./img")
 	if err != nil {
@@ -47,23 +47,6 @@ func (S *Scenario) slideShow() {
 			if err != nil {
 				clog.Fatal("scenario", "slideShow", err)
 			}
-		}
-	}
-}
-
-func (S *Scenario) displayGif() {
-
-	f, err := os.Open("./anim/christmas.gif")
-	if err != nil {
-		clog.Fatal("scenario", "displayGif", err)
-	}
-
-	close, err := S.tk.PlayGIF(f)
-	for {
-		select {
-		case <-S.quit:
-			close <- true
-			return
 		}
 	}
 }
@@ -96,7 +79,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 		case 1:
 			S.slideShow()
 		case 2:
-			S.displayGif()
+			S.displayGif("christmas")
 		case 3:
 			S.HorloLed()
 		case 4:
