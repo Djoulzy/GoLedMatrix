@@ -53,7 +53,7 @@ func (S *Scenario) slideShow() {
 
 func (S *Scenario) displayGif() {
 
-	f, err := os.Open("./anim/muppet.gif")
+	f, err := os.Open("./anim/christmas.gif")
 	if err != nil {
 		clog.Fatal("scenario", "displayGif", err)
 	}
