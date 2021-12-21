@@ -83,7 +83,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 		case 3:
 			S.HorloLed()
 		case 4:
-			S.ScrollText("Petite Boutche Belle ...")
+			S.ScrollText("Joyeux Noël ...")
 		case 5:
 			S.FancyClock()
 		}

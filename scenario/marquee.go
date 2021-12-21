@@ -30,7 +30,7 @@ func (S *Scenario) ScrollText(message string) {
 		Quit:     S.quit,
 	}
 
-	anim.ctx.LoadFontFace("./ttf/Perform.ttf", 40)
+	anim.ctx.LoadFontFace("./ttf/marquee/Bullpen3D.ttf", 40)
 	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(message)
 	anim.position = image.Point{size.X, center.Y + int(anim.txtHeight/2)}
 
