@@ -71,7 +71,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	S.tk = rgbmatrix.NewToolKit(t)
 	defer S.tk.Close()
 
-	S.mode = 3
+	S.mode = 4
 	S.quit = make(chan bool, 0)
 
 	for {
@@ -83,7 +83,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 		case 3:
 			S.HorloLed()
 		case 4:
-			S.BouncingBall()
+			S.ScrollText("Petite Boutche Belle ...")
 		case 5:
 			S.FancyClock()
 		}
