@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 
@@ -22,7 +23,14 @@ type templateVars struct {
 var homeVars templateVars
 
 func (h *HTTP) homeHandler(w http.ResponseWriter, r *http.Request) {
-	homeTemplate.Execute(w, homeVars)
+	var err error
+	t := template.New("")
+	if _, err = t.ParseFiles("./server/templates/home.html"); err != nil {
+		clog.Fatal("HTTPServer", "homeHandler", err)
+	}
+	if err = t.ExecuteTemplate(w, "home", homeVars); err != nil {
+		clog.Fatal("HTTPServer", "homeHandler", err)
+	}
 }
 
 func (h *HTTP) testFunc(w http.ResponseWriter, r *http.Request) {
