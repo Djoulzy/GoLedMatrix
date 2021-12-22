@@ -1,4 +1,4 @@
-{{define "home"}}
+{{define "slideshow"}}
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,10 +14,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     </head>
     <body>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="1" onClick="location.href='/modules/slideshow';">slideShow</button></div>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="2">displayGif</button></div>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="3">HorloLed</button></div>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="4">BouncingBall</button></div>
+        <form id="uploadbanner" enctype="multipart/form-data" method="post" action="/upload">
+            <input id="fileupload" name="imgFile" type="file" />
+            <input type="submit" value="submit" id="submit" />
+         </form>
          
          <script src="/static/tools.js"></script>
     </body>
