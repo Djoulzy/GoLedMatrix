@@ -1,0 +1,19 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+        Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    height: 97vh;
+    max-height: 600px;
+    background-color: #222222;
+}
+
+.menuItem {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.modeSelect {
+    font-size: 18px;
+    width: 80%;
+    height: 40px;
+}
