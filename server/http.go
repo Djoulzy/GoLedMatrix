@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jdeng/goheif"
+	"gopkg.in/gographics/imagick.v3/imagick"
 
 	"GoLedMatrix/clog"
 	"GoLedMatrix/confload"
@@ -62,17 +62,50 @@ func (h *HTTP) testFunc(w http.ResponseWriter, r *http.Request) {
 }
 
 func cropAndResize(src, dest string) {
-	f, err := os.Open("./img/" + src)
+	imagick.Initialize()
+	defer imagick.Terminate()
+
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
+
+	var crop uint
+
+	_, err := os.Open(src)
 	if err != nil {
 		clog.Fatal("scenario", "slideShow", err)
 	}
 
-	ext := strings.Split(dest, ".")[1]
-	switch ext {
-	case "jpg":
-	case "jpeg":
-	case "heic":
-		goheif.Decode(f)
+	err = mw.ReadImage(src)
+	if err != nil {
+		panic(err)
+	}
+
+	fileInfos := strings.Split(dest, ".")
+	clog.Test("test", "test", "%s - %s", fileInfos[0], fileInfos[1])
+
+	ow := mw.GetImageWidth()
+	oh := mw.GetImageHeight()
+
+	if ow > oh {
+		crop = oh
+	} else {
+		crop = ow
+	}
+	mw.CropImage(crop, crop, int(ow/2-crop/2), int(oh/2-crop/2))
+
+	mw.SetFormat("jpg")
+
+	if err = mw.ResizeImage(128, 128, imagick.FILTER_LANCZOS2_SHARP); err != nil {
+		clog.Fatal("scenario", "cropAndResize", err)
+	}
+	if err = mw.WriteImage("./test.jpg"); err != nil {
+		clog.Fatal("scenario", "cropAndResize", err)
+	}
+
+	mw.SetFormat("jpg")
+	clog.Test("Scenario", "cropAndResize", "file: %s", fileInfos[0]+".jpg")
+	if err = mw.WriteImage("./media/img/" + fileInfos[0] + ".jpg"); err != nil {
+		clog.Fatal("scenario", "cropAndResize", err)
 	}
 }
 
@@ -92,8 +125,9 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 	}
 	defer func() {
 		tempFile.Close()
-		clog.Trace("HTTPServer", "uploadMedia", "%s %s", "./media/img/"+tempFile.Name(), "./media/img/"+handler.Filename)
-		os.Rename(tempFile.Name(), "./media/img/"+handler.Filename)
+		clog.Trace("HTTPServer", "uploadMedia", "%s %s", tempFile.Name(), handler.Filename)
+		cropAndResize(tempFile.Name(), handler.Filename)
+		os.Remove(tempFile.Name())
 	}()
 
 	fileBytes, err := ioutil.ReadAll(file)

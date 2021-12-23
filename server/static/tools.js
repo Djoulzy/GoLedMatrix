@@ -15,14 +15,14 @@ function ajaxDataLoader(url, dataType, method, postVal) {
 
 $(document).ready(function() {
 
-    // $(".modeSelect").on("click", function(e) {
-    //     var mode = $(e.target).data("mode")
-    //     const params = {
-    //         mode: mode,
-    //     }
-    //     $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
+    $(".modeSelect").on("click", function(e) {
+        var mode = $(e.target).data("mode")
+        const params = {
+            mode: mode,
+        }
+        $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
 
-    //     })
-    // })
+        })
+    })
 
 });

@@ -27,7 +27,7 @@ type ControlParams struct {
 func (S *Scenario) slideShow() {
 	var d time.Duration = time.Second * 3
 
-	files, err := ioutil.ReadDir("./img")
+	files, err := ioutil.ReadDir("./media/img")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func (S *Scenario) slideShow() {
 		case <-S.quit:
 			return
 		default:
-			f, err := os.Open("./img/" + finfo.Name())
+			f, err := os.Open("./media/img/" + finfo.Name())
 			if err != nil {
 				clog.Fatal("scenario", "slideShow", err)
 			}
