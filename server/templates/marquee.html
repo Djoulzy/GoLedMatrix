@@ -1,4 +1,4 @@
-{{define "slideshow"}}
+{{define "marquee"}}
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,12 +14,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     </head>
     <body>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="1">Start</button></div>
-
-        <form id="uploadbanner" enctype="multipart/form-data" method="post" action="/upload">
-            <input id="fileupload" name="imgFile" type="file" />
-            <input type="submit" value="submit" id="submit" />
-         </form>
+        <div class="menuItem"><button type="button" class="modeSelect" data-mode="4">Start</button></div>
          
          <script src="/static/tools.js"></script>
          <script>
@@ -29,6 +24,7 @@
                     var mode = $(e.target).data("mode")
                     const params = {
                         mode: mode,
+                        text: '... Joyeux Noël ...',
                     }
                     $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
             

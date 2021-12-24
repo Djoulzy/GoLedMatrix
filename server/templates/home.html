@@ -15,11 +15,26 @@
     </head>
     <body>
         <div class="menuItem"><button type="button" onClick="location.href='/modules/slideshow';">slideShow</button></div>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="2">displayGif</button></div>
+        <div class="menuItem"><button type="button" onClick="location.href='/modules/gifanims';">GIF anims</button></div>
         <div class="menuItem"><button type="button" class="modeSelect" data-mode="3">HorloLed</button></div>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="4">BouncingBall</button></div>
+        <div class="menuItem"><button type="button" onClick="location.href='/modules/marquee';">Marquee</button></div>
          
          <script src="/static/tools.js"></script>
+         <script>
+            $(document).ready(function() {
+
+                $(".modeSelect").on("click", function(e) {
+                    var mode = $(e.target).data("mode")
+                    const params = {
+                        mode: mode,
+                    }
+                    $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
+            
+                    })
+                })
+            
+            });
+         </script>
     </body>
 </html>
 {{end}}

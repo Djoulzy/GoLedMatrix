@@ -9,20 +9,25 @@ import (
 )
 
 type Scenario struct {
-	tk   *rgbmatrix.ToolKit
-	conf *confload.ConfigData
-	m    *rgbmatrix.Matrix
-	mode int
-	quit chan bool
+	tk       *rgbmatrix.ToolKit
+	conf     *confload.ConfigData
+	m        *rgbmatrix.Matrix
+	mode     int
+	controls *ControlParams
+	quit     chan bool
 }
 
 type ControlParams struct {
-	Mode int `json:"mode"`
+	Mode  int    `json:"mode"`
+	Text  string `json:"text"`
+	Image string `json:"image"`
+	Serie string `json:"serie"`
 }
 
 func (S *Scenario) Control(params *ControlParams) {
 	clog.Test("Scenario", "Control", "Starting mode: %d", params.Mode)
 	S.mode = params.Mode
+	S.controls = params
 	S.quit <- true
 }
 
@@ -40,19 +45,23 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	S.tk = rgbmatrix.NewToolKit(t)
 	defer S.tk.Close()
 
-	S.mode = 4
+	S.controls = &ControlParams{
+		Mode:  4,
+		Text:  "Joyeux Noël ...",
+		Serie: "christmas",
+	}
 	S.quit = make(chan bool, 0)
 
 	for {
-		switch S.mode {
+		switch S.controls.Mode {
 		case 1:
 			S.slideShow()
 		case 2:
-			S.displayGif("christmas")
+			S.displayGif()
 		case 3:
 			S.HorloLed()
 		case 4:
-			S.ScrollText("Joyeux Noël ...")
+			S.ScrollText()
 		case 5:
 			S.FancyClock()
 		}

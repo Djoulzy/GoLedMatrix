@@ -18,7 +18,7 @@ type TextAnim struct {
 	Quit      chan bool
 }
 
-func (S *Scenario) ScrollText(message string) {
+func (S *Scenario) ScrollText() {
 	size := S.tk.Canvas.Bounds().Max
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
 
@@ -26,12 +26,12 @@ func (S *Scenario) ScrollText(message string) {
 		ctx:      gg.NewContext(size.X, size.Y),
 		dir:      image.Point{-1, 0},
 		position: image.Point{128, 64},
-		message:  message,
+		message:  S.controls.Text,
 		Quit:     S.quit,
 	}
 
 	anim.ctx.LoadFontFace("./ttf/marquee/Bullpen3D.ttf", 40)
-	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(message)
+	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(S.controls.Text)
 	anim.position = image.Point{size.X, center.Y + int(anim.txtHeight/2)}
 
 	S.tk.PlayAnimation(anim)

@@ -8,19 +8,19 @@ import (
 	"time"
 )
 
-func (S *Scenario) displayGif(serie string) {
+func (S *Scenario) displayGif() {
 	ticker := time.NewTicker(time.Second * 10)
 	defer func() {
 		ticker.Stop()
 	}()
 
-	files, err := ioutil.ReadDir("./media/anim/" + serie)
+	files, err := ioutil.ReadDir("./media/anim/" + S.controls.Serie)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, finfo := range files {
-		f, err := os.Open("./media/anim/" + serie + "/" + finfo.Name())
+		f, err := os.Open("./media/anim/" + S.controls.Serie + "/" + finfo.Name())
 		if err != nil {
 			clog.Fatal("scenario", "slideShow", err)
 		}

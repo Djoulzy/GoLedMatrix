@@ -12,17 +12,3 @@ function ajaxDataLoader(url, dataType, method, postVal) {
     })
     .fail(function(data) { console.log("-- Error -- url: ", url) })
 }
-
-$(document).ready(function() {
-
-    $(".modeSelect").on("click", function(e) {
-        var mode = $(e.target).data("mode")
-        const params = {
-            mode: mode,
-        }
-        $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
-
-        })
-    })
-
-});
