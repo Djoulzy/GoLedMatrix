@@ -89,7 +89,8 @@ func cropAndResize(src, dest string) {
 	if ow > oh {
 		crop = oh
 	} else {
-		crop = ow
+		mw.SetImageOrientation(imagick.ORIENTATION_TOP_LEFT)
+		crop = oh
 	}
 	if err = mw.CropImage(crop, crop, int(ow/2-crop/2), int(oh/2-crop/2)); err != nil {
 		clog.Fatal("cropAndResize", "CropImage", err)
