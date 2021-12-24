@@ -5,10 +5,6 @@ import (
 	"GoLedMatrix/confload"
 	"GoLedMatrix/emulator"
 	"GoLedMatrix/rgbmatrix"
-	"image"
-	"io/ioutil"
-	"log"
-	"os"
 	"time"
 )
 
@@ -22,33 +18,6 @@ type Scenario struct {
 
 type ControlParams struct {
 	Mode int `json:"mode"`
-}
-
-func (S *Scenario) slideShow() {
-	var d time.Duration = time.Second * 3
-
-	files, err := ioutil.ReadDir("./media/img")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, finfo := range files {
-		select {
-		case <-S.quit:
-			return
-		default:
-			f, err := os.Open("./media/img/" + finfo.Name())
-			if err != nil {
-				clog.Fatal("scenario", "slideShow", err)
-			}
-			img, _, err := image.Decode(f)
-
-			err = S.tk.PlayImage(img, d)
-			if err != nil {
-				clog.Fatal("scenario", "slideShow", err)
-			}
-		}
-	}
 }
 
 func (S *Scenario) Control(params *ControlParams) {

@@ -14,13 +14,13 @@ func (S *Scenario) displayGif(serie string) {
 		ticker.Stop()
 	}()
 
-	files, err := ioutil.ReadDir("./anim/" + serie)
+	files, err := ioutil.ReadDir("./media/anim/" + serie)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, finfo := range files {
-		f, err := os.Open("./anim/" + serie + "/" + finfo.Name())
+		f, err := os.Open("./media/anim/" + serie + "/" + finfo.Name())
 		if err != nil {
 			clog.Fatal("scenario", "slideShow", err)
 		}
