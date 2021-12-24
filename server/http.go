@@ -79,9 +79,9 @@ func cropAndResize(src, dest string) {
 	if err != nil {
 		panic(err)
 	}
+	mw.SetFormat("jpg")
 
 	fileInfos := strings.Split(dest, ".")
-	clog.Test("test", "test", "%s - %s", fileInfos[0], fileInfos[1])
 
 	ow := mw.GetImageWidth()
 	oh := mw.GetImageHeight()
@@ -91,21 +91,14 @@ func cropAndResize(src, dest string) {
 	} else {
 		crop = ow
 	}
-	mw.CropImage(crop, crop, int(ow/2-crop/2), int(oh/2-crop/2))
-
-	mw.SetFormat("jpg")
-
+	if err = mw.CropImage(crop, crop, int(ow/2-crop/2), int(oh/2-crop/2)); err != nil {
+		clog.Fatal("cropAndResize", "CropImage", err)
+	}
 	if err = mw.ResizeImage(128, 128, imagick.FILTER_LANCZOS2_SHARP); err != nil {
-		clog.Fatal("scenario", "cropAndResize", err)
+		clog.Fatal("cropAndResize", "ResizeImage", err)
 	}
-	if err = mw.WriteImage("./test.jpg"); err != nil {
-		clog.Fatal("scenario", "cropAndResize", err)
-	}
-
-	mw.SetFormat("jpg")
-	clog.Test("Scenario", "cropAndResize", "file: %s", fileInfos[0]+".jpg")
 	if err = mw.WriteImage("./media/img/" + fileInfos[0] + ".jpg"); err != nil {
-		clog.Fatal("scenario", "cropAndResize", err)
+		clog.Fatal("cropAndResize", "WriteImage", err)
 	}
 }
 
