@@ -8,6 +8,7 @@ require (
 	github.com/go-ini/ini v1.66.2
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gorilla/mux v1.8.0
+	github.com/icza/gox v0.0.0-20210726201659-cd40a3f8d324
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c
 	gopkg.in/gographics/imagick.v3 v3.4.0

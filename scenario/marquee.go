@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
+	"github.com/icza/gox/imagex/colorx"
 )
 
 type TextAnim struct {
@@ -15,6 +16,7 @@ type TextAnim struct {
 	message   string
 	txtWidth  float64
 	txtHeight float64
+	col       color.RGBA
 	Quit      chan bool
 }
 
@@ -33,6 +35,7 @@ func (S *Scenario) ScrollText() {
 	anim.ctx.LoadFontFace("./ttf/marquee/Bullpen3D.ttf", 40)
 	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(S.controls.Text)
 	anim.position = image.Point{size.X, center.Y + int(anim.txtHeight/2)}
+	anim.col, _ = colorx.ParseHexColor(S.controls.Color)
 
 	S.tk.PlayAnimation(anim)
 }
@@ -47,7 +50,7 @@ func (t *TextAnim) Next() (image.Image, <-chan time.Time, error) {
 	t.ctx.SetColor(color.Black)
 	t.ctx.Clear()
 
-	t.ctx.SetColor(color.RGBA{255, 0, 0, 255})
+	t.ctx.SetColor(t.col)
 	t.ctx.DrawString(t.message, float64(t.position.X), float64(t.position.Y))
 	t.ctx.Fill()
 	return t.ctx.Image(), time.After(time.Millisecond * 20), nil

@@ -22,6 +22,7 @@ type ControlParams struct {
 	Text  string `json:"text"`
 	Image string `json:"image"`
 	Serie string `json:"serie"`
+	Color string `json:"color"`
 }
 
 func (S *Scenario) Control(params *ControlParams) {
@@ -49,6 +50,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 		Mode:  4,
 		Text:  "Joyeux Noël ...",
 		Serie: "christmas",
+		Color: "#FF000000",
 	}
 	S.quit = make(chan bool, 0)
 

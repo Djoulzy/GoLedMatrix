@@ -16,23 +16,30 @@
     <body>
         <div class="menuItem"><button type="button" class="modeSelect" data-mode="4">Start</button></div>
          
-         <script src="/static/tools.js"></script>
-         <script>
-            $(document).ready(function() {
+        <input id="mColor" type="color" />
+        <input id="mText" type="text" />
 
-                $(".modeSelect").on("click", function(e) {
-                    var mode = $(e.target).data("mode")
-                    const params = {
-                        mode: mode,
-                        text: '... Joyeux Noël ...',
-                    }
-                    $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
-            
-                    })
+        <script src="/static/tools.js"></script>
+        <script>
+        $(document).ready(function() {
+
+            $(".modeSelect").on("click", function(e) {
+                var mode = $(e.target).data("mode")
+                var color = $("#mColor").val()
+                var texte = $("#mText").val()
+                console.log(color)
+                const params = {
+                    mode: mode,
+                    text: texte,
+                    color: color,
+                }
+                $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
+        
                 })
-            
-            });
-         </script>
+            })
+        
+        });
+        </script>
     </body>
 </html>
 {{end}}
