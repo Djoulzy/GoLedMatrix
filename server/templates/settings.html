@@ -1,4 +1,4 @@
-{{define "home"}}
+{{define "settings"}}
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,11 +14,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     </head>
     <body>
-        <div class="menuItem"><button type="button" onClick="location.href='/modules/slideshow';">slideShow</button></div>
-        <div class="menuItem"><button type="button" onClick="location.href='/modules/gifanims';">GIF anims</button></div>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="1">HorloLed</button></div>
-        <div class="menuItem"><button type="button" onClick="location.href='/modules/marquee';">Marquee</button></div>
-        <div class="menuItem"><button type="button" onClick="location.href='/modules/settings';">Settings</button></div>
+        <div class="menuItem"><button type="button" class="modeSelect">Apply</button></div>
+         
+        <input id="mColor" type="color" />
 
         <script src="/static/tools.js"></script>
         <script>
@@ -26,8 +24,13 @@
 
             $(".modeSelect").on("click", function(e) {
                 var mode = $(e.target).data("mode")
+                var color = $("#mColor").val()
+                var texte = $("#mText").val()
+                console.log(color)
                 const params = {
                     mode: mode,
+                    text: texte,
+                    color: color,
                 }
                 $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
         

@@ -35,7 +35,7 @@ func (S *Scenario) ScrollText() {
 	anim.ctx.LoadFontFace("./ttf/marquee/Bullpen3D.ttf", 40)
 	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(S.controls.Text)
 	anim.position = image.Point{size.X, center.Y + int(anim.txtHeight/2)}
-	anim.col, _ = colorx.ParseHexColor(S.controls.Color)
+	anim.col, _ = colorx.ParseHexColor(S.controls.FGColor)
 
 	S.tk.PlayAnimation(anim)
 }

@@ -18,11 +18,14 @@ type Scenario struct {
 }
 
 type ControlParams struct {
-	Mode  int    `json:"mode"`
-	Text  string `json:"text"`
-	Image string `json:"image"`
-	Serie string `json:"serie"`
-	Color string `json:"color"`
+	Mode     int    `json:"mode"`
+	Text     string `json:"text"`
+	Image    string `json:"image"`
+	Serie    string `json:"serie"`
+	FGColor  string `json:"fgcolor"`
+	BGColor  string `json:"bgcolor"`
+	FontFace string `json:"font"`
+	FontSize int    `json:"size"`
 }
 
 func (S *Scenario) Control(params *ControlParams) {
@@ -47,21 +50,21 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	defer S.tk.Close()
 
 	S.controls = &ControlParams{
-		Mode:  4,
-		Text:  "Joyeux Noël ...",
-		Serie: "christmas",
-		Color: "#FF000000",
+		Mode:    1,
+		Text:    "Joyeux Noël ...",
+		Serie:   "christmas",
+		FGColor: "#FF000000",
 	}
 	S.quit = make(chan bool, 0)
 
 	for {
 		switch S.controls.Mode {
 		case 1:
-			S.slideShow()
+			S.HorloLed()
 		case 2:
 			S.displayGif()
 		case 3:
-			S.HorloLed()
+			S.slideShow()
 		case 4:
 			S.ScrollText()
 		case 5:
