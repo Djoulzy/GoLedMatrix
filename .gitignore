@@ -11,8 +11,25 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
+# Media dir
+media/*
+!media/.gitkeep
+
+!media/ttf
+
+!media/anim/
+media/anim/*
+!media/anim/.gitkeep
+
+!media/img/
+media/img/*
+!media/img/.gitkeep
+
+!media/tmp/
+media/tmp/*
+!media/tmp/.gitkeep
+
 # Dependency directories (remove the comment below to include it)
 vendor/
-media/
 GoLedMatrix
 config.ini
