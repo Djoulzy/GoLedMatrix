@@ -7,7 +7,16 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/icza/gox/imagex/colorx"
+	"github.com/mitchellh/mapstructure"
 )
+
+type ScrollParams struct {
+	Text     string `json:"text"`
+	FGColor  string `json:"fgcolor"`
+	BGColor  string `json:"bgcolor"`
+	FontFace string `json:"font"`
+	FontSize int    `json:"size"`
+}
 
 type TextAnim struct {
 	ctx       *gg.Context
@@ -21,6 +30,9 @@ type TextAnim struct {
 }
 
 func (S *Scenario) ScrollText() {
+	var scrollParams ScrollParams
+	mapstructure.Decode(S.controls.ModuleParams, &scrollParams)
+
 	size := S.tk.Canvas.Bounds().Max
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
 
@@ -28,14 +40,14 @@ func (S *Scenario) ScrollText() {
 		ctx:      gg.NewContext(size.X, size.Y),
 		dir:      image.Point{-1, 0},
 		position: image.Point{128, 64},
-		message:  S.controls.Text,
+		message:  scrollParams.Text,
 		Quit:     S.quit,
 	}
 
 	anim.ctx.LoadFontFace("./ttf/marquee/Bullpen3D.ttf", 40)
-	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(S.controls.Text)
+	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(scrollParams.Text)
 	anim.position = image.Point{size.X, center.Y + int(anim.txtHeight/2)}
-	anim.col, _ = colorx.ParseHexColor(S.controls.FGColor)
+	anim.col, _ = colorx.ParseHexColor(scrollParams.FGColor)
 
 	S.tk.PlayAnimation(anim)
 }

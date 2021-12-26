@@ -2,7 +2,7 @@
 Rows                    = 32
 Cols                    = 64
 ChainLength             = 4
-Parallel                = 1
+Parallel                = 2
 
 PWMBits                 = 11
 PWMLSBNanoseconds       = 130
@@ -13,7 +13,7 @@ HardwareMapping         = "regular"
 ShowRefreshRate         = true
 InverseColors           = false
 DisableHardwarePulsing  = false
-PixelMapperConfig       = "U-mapper"
+PixelMapperConfig       = "V-mapper:Z"
 LimitRefreshRateHz      = 70
 Multiplexing            = 0
 
@@ -24,5 +24,16 @@ DropPrivileges          = 0
 DoGpioInit              = true
 
 [HTTPserver]
-Addr                    = localhost
+Addr                    = 192.168.0.6
+Port                    = 80
 Enabled                 = true
+
+[Default]
+Mode                    = 1
+MediaDir                = "./media/"
+TmpDir                  = "./media/tmp/"
+FontDir                 = "./ttf/"
+FgColor                 = "#FF0000FF"
+BgColor                 = "#000000FF"
+TimeFont                = "modern/HappyBomb.ttf"
+TextFont                = "marquee/Bullpen3D.ttf"

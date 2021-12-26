@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -145,9 +146,10 @@ func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	router.HandleFunc("/test", h.testFunc).Methods("POST")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./server/static"))))
 
-	clog.Output("HTTP Server starting listening on %s", config.HTTPserver.Addr)
+	host := fmt.Sprintf("%s:%d", config.HTTPserver.Addr, config.HTTPserver.Port)
+	clog.Output("HTTP Server starting listening on %s", host)
 
 	go func() {
-		clog.Fatal("server", "HTTP", http.ListenAndServe(config.HTTPserver.Addr, router))
+		clog.Fatal("server", "HTTP", http.ListenAndServe(host, router))
 	}()
 }

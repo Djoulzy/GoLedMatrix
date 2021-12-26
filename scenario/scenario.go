@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+type DataParams interface{}
+
 type Scenario struct {
 	tk       *rgbmatrix.ToolKit
 	conf     *confload.ConfigData
@@ -18,14 +20,8 @@ type Scenario struct {
 }
 
 type ControlParams struct {
-	Mode     int    `json:"mode"`
-	Text     string `json:"text"`
-	Image    string `json:"image"`
-	Serie    string `json:"serie"`
-	FGColor  string `json:"fgcolor"`
-	BGColor  string `json:"bgcolor"`
-	FontFace string `json:"font"`
-	FontSize int    `json:"size"`
+	Mode         int        `json:"mode"`
+	ModuleParams DataParams `json:"params"`
 }
 
 func (S *Scenario) Control(params *ControlParams) {
@@ -51,9 +47,6 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 
 	S.controls = &ControlParams{
 		Mode:    1,
-		Text:    "Joyeux Noël ...",
-		Serie:   "christmas",
-		FGColor: "#FF000000",
 	}
 	S.quit = make(chan bool, 0)
 

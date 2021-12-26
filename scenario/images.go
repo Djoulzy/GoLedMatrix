@@ -7,9 +7,19 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/mitchellh/mapstructure"
 )
 
+type ImageParams struct {
+	Image string `json:"image"`
+	Serie string `json:"serie"`
+}
+
 func (S *Scenario) slideShow() {
+	var imageParams ImageParams
+	mapstructure.Decode(S.controls.ModuleParams, &imageParams)
+
 	var d time.Duration = time.Second * 3
 
 	files, err := ioutil.ReadDir("./media/img")
