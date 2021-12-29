@@ -17,11 +17,12 @@ type ClockParams struct {
 	FGColor1 string `json:"fgcolor1"`
 	FGColor2 string `json:"fgcolor2"`
 	BGColor  string `json:"bgcolor"`
-	FontFace string `json:"font"`
-	FontSize int    `json:"size"`
+	FontFace string `json:"fontface"`
+	FontSize int    `json:"fontsize"`
 }
 
 func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
+	clog.Trace("clock", "validateParams", "%v", params)
 	var clockParams ClockParams
 	if params != nil {
 		if err := mapstructure.Decode(params, &clockParams); err != nil {
@@ -29,6 +30,7 @@ func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
 		}
 	}
 
+	clog.Trace("clock", "validateParams", "%v", clockParams)
 	if clockParams.FontFace == "" {
 		clockParams.FontFace = defParams.FontFace
 	}
@@ -44,6 +46,8 @@ func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
 	if clockParams.BGColor == "" {
 		clockParams.BGColor = defParams.BGColor
 	}
+
+	clog.Trace("clock", "validateParams", "%v", clockParams)
 	return &clockParams
 }
 
@@ -90,11 +94,11 @@ func (S *Scenario) FancyClock() {
 
 func (S *Scenario) OfficeRound() {
 	defaultParams := ClockParams{
-		FontFace:"./media/ttf/digital/TickingTimebomb.ttf",
-		FontSize:38,
-		FGColor1:"#FF0000",
-		FGColor2:"#FFFFFF",
-		BGColor:"#000000",
+		FontFace: "digital/TickingTimebomb.ttf",
+		FontSize: 38,
+		FGColor1: "#FF0000",
+		FGColor2: "#FFFFFF",
+		BGColor:  "#000000",
 	}
 	clockParams := validateParams(S.controls, &defaultParams)
 
@@ -108,7 +112,7 @@ func (S *Scenario) OfficeRound() {
 	r1 := float64(center.Y) - 8
 	r2 := float64(center.Y) - 2
 
-	ctx.LoadFontFace(clockParams.FontFace, float64(clockParams.FontSize))
+	ctx.LoadFontFace(S.conf.DefaultConf.FontDir+clockParams.FontFace, float64(clockParams.FontSize))
 	bgcol, _ := colorx.ParseHexColor(clockParams.BGColor)
 	fgcol1, _ := colorx.ParseHexColor(clockParams.FGColor1)
 	fgcol2, _ := colorx.ParseHexColor(clockParams.FGColor2)

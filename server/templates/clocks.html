@@ -16,15 +16,15 @@
             </div>
             <div>
                 <div class="mediaSelector">Serie<br/>
-                    <select id="fontSerie" class="serieSelector" data-target="faceSelect">
+                    <select id="fontSerie" class="serieSelector" data-target="faceSelect" data-default="digital">
                     </select>
                 </div>
                 <div class="mediaSelector">Font<br/>
-                    <select id="faceSelect" class="fileSelector">
+                    <select id="faceSelect" class="fileSelector" data-default="TickingTimebomb.ttf">
                     </select>
                 </div>
                 <div class="mediaSelector">Size<br/>
-                    <select>
+                    <select id="sizeSelect" class="sizeSelector" data-default="38">
                     </select>
                 </div>
             </div>
@@ -36,30 +36,37 @@
         $(document).ready(function() {
 
             $(".modeSelect").on("click", function(e) {
-                const params = {
-                    bgcolor: $("#bgcolor").val(),
-                    fgcolor1: $("#fgcolor1").val(),
-                    fgcolor2: $("#fgcolor2").val(),
-                    font: "",
-                    size: $("#size").val(),
-                }
-                const mode = {
+                var mode = {
                     mode: $(e.target).data("mode"),
-                    params: params
+                    params: {
+                        bgcolor: $("#bgcolor").val(),
+                        fgcolor1: $("#fgcolor1").val(),
+                        fgcolor2: $("#fgcolor2").val(),
+                        fontface: $("#fontSerie").val()+"/"+$("#faceSelect").val(),
+                        fontsize: parseInt($("#sizeSelect").val(), 10),
+                    }
                 }
                 $.when(ajaxDataLoader("controls", 'json', 'POST', mode))
             })
 
             $(".serieSelector").on("change", function(e) {
                 var dest = $(e.target).data("target")
-                var url = "getDir/ttf/"+$(e.target).val()
+                var url = "getDir/ttf/"+$(e.target).val()+"?"+$(e.target).data("default")
                 $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
                     $("#"+dest).html(data)
                 })
             })
 
             $(".serieSelector").each(function(index, elemt) {
-                $.when(ajaxDataLoader("getDir/ttf", 'html', 'GET')).done(function(data) {
+                var url = "getDir/ttf?default="+$(elemt).data("default")
+                $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
+                    $(elemt).html(data)
+                })
+            })
+
+            $(".sizeSelector").each(function(index, elemt) {
+                var url = "getSize/10/100?default="+$(elemt).data("default")
+                $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
                     $(elemt).html(data)
                 })
             }) 

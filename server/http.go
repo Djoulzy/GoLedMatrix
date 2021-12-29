@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/mux"
@@ -47,6 +48,25 @@ func (h *HTTP) modulesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err = t.ExecuteTemplate(w, params["module"], homeVars); err != nil {
 		clog.Fatal("HTTPServer", "modulesHandler", err)
+	}
+}
+
+func (h *HTTP) getFontSize(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	params := mux.Vars(r)
+	debut, _ := strconv.Atoi(params["start"])
+	fin, _ := strconv.Atoi(params["end"])
+	list := make(map[int]int)
+	for i := debut; i <= fin; i++ {
+		list[i] = i
+	}
+	t := template.New("")
+	if _, err = t.ParseFiles("./server/templates/sizelist.html"); err != nil {
+		clog.Fatal("HTTPServer", "getFontSize", err)
+	}
+	if err = t.ExecuteTemplate(w, "sizelist", list); err != nil {
+		clog.Fatal("HTTPServer", "getFontSize", err)
 	}
 }
 
@@ -159,6 +179,7 @@ func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	router.HandleFunc("/modules/{module}", h.modulesHandler).Methods("GET")
 	router.HandleFunc("/getDir/{type}", h.getDir).Methods("GET")
 	router.HandleFunc("/getDir/{type}/{serie:[a-zA-Z0-9]+}", h.getDir).Methods("GET")
+	router.HandleFunc("/getSize/{start}/{end}", h.getFontSize).Methods("GET")
 	router.HandleFunc("/upload", h.uploadMedia).Methods("POST")
 	router.HandleFunc("/controls", h.setControls).Methods("POST")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./server/static"))))
