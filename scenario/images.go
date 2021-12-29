@@ -2,6 +2,7 @@ package scenario
 
 import (
 	"GoLedMatrix/clog"
+	"fmt"
 	"image"
 	"io/ioutil"
 	"log"
@@ -18,11 +19,13 @@ type ImageParams struct {
 
 func (S *Scenario) slideShow() {
 	var imageParams ImageParams
-	mapstructure.Decode(S.controls.ModuleParams, &imageParams)
+	mapstructure.Decode(S.controls, &imageParams)
 
 	var d time.Duration = time.Second * 3
 
-	files, err := ioutil.ReadDir("./media/img")
+	mediaDir := fmt.Sprintf("%simg/", S.conf.DefaultConf.MediaDir)
+
+	files, err := ioutil.ReadDir(mediaDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +35,7 @@ func (S *Scenario) slideShow() {
 		case <-S.quit:
 			return
 		default:
-			f, err := os.Open("./media/img/" + finfo.Name())
+			f, err := os.Open(mediaDir + finfo.Name())
 			if err != nil {
 				clog.Fatal("scenario", "slideShow", err)
 			}

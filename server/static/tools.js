@@ -10,5 +10,5 @@ function ajaxDataLoader(url, dataType, method, postVal) {
         async: true,
         dataType : dataType,
     })
-    .fail(function(data) { console.log("-- Error -- url: ", url) })
+    .fail(function(data) { console.log("-- Error -- url: ", host) })
 }

@@ -2,6 +2,7 @@ package scenario
 
 import (
 	"GoLedMatrix/clog"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,20 +18,22 @@ type GifParams struct {
 
 func (S *Scenario) displayGif() {
 	var gifParams GifParams
-	mapstructure.Decode(S.controls.ModuleParams, &gifParams)
+	mapstructure.Decode(S.controls, &gifParams)
 
 	ticker := time.NewTicker(time.Second * 10)
 	defer func() {
 		ticker.Stop()
 	}()
 
-	files, err := ioutil.ReadDir("./media/anim/" + gifParams.Serie)
+	mediaDir := fmt.Sprintf("%sanim/", S.conf.DefaultConf.MediaDir)
+
+	files, err := ioutil.ReadDir(mediaDir + gifParams.Serie)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, finfo := range files {
-		f, err := os.Open("./media/anim/" + gifParams.Serie + "/" + finfo.Name())
+		f, err := os.Open(mediaDir + gifParams.Serie + "/" + finfo.Name())
 		if err != nil {
 			clog.Fatal("scenario", "slideShow", err)
 		}

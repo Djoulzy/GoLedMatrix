@@ -1,6 +1,7 @@
 package scenario
 
 import (
+	"GoLedMatrix/clog"
 	"image"
 	"image/color"
 	"math"
@@ -8,7 +9,43 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
+	"github.com/icza/gox/imagex/colorx"
+	"github.com/mitchellh/mapstructure"
 )
+
+type ClockParams struct {
+	FGColor1 string `json:"fgcolor1"`
+	FGColor2 string `json:"fgcolor2"`
+	BGColor  string `json:"bgcolor"`
+	FontFace string `json:"font"`
+	FontSize int    `json:"size"`
+}
+
+func validateParams(params DataParams) *ClockParams {
+	var clockParams ClockParams
+	if params != nil {
+		if err := mapstructure.Decode(params, &clockParams); err != nil {
+			clog.Fatal("clock", "validateParams", err)
+		}
+	}
+
+	if clockParams.FontFace == "" {
+		clockParams.FontFace = "./media/ttf/digital/TickingTimebomb.ttf"
+	}
+	if clockParams.FontSize == 0 {
+		clockParams.FontSize = 38
+	}
+	if clockParams.FGColor1 == "" {
+		clockParams.FGColor1 = "#FF0000"
+	}
+	if clockParams.FGColor2 == "" {
+		clockParams.FGColor2 = "#FFFFFF"
+	}
+	if clockParams.BGColor == "" {
+		clockParams.BGColor = "#000000"
+	}
+	return &clockParams
+}
 
 func (S *Scenario) SimpleTime(text string) {
 	actual := time.Now()
@@ -51,7 +88,10 @@ func (S *Scenario) FancyClock() {
 	}
 }
 
-func (S *Scenario) HorloLed() {
+func (S *Scenario) OfficeRound() {
+	// clog.Test("scenario", "OfficeRound", "%v", clockParams)
+	clockParams := validateParams(S.controls)
+
 	size := S.tk.Canvas.Bounds().Max
 	ctx := gg.NewContext(size.X, size.Y)
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
@@ -62,17 +102,20 @@ func (S *Scenario) HorloLed() {
 	r1 := float64(center.Y) - 8
 	r2 := float64(center.Y) - 2
 
-	ctx.LoadFontFace("./ttf/digital/TickingTimebomb.ttf", 38)
+	ctx.LoadFontFace(clockParams.FontFace, float64(clockParams.FontSize))
+	bgcol, _ := colorx.ParseHexColor(clockParams.BGColor)
+	fgcol1, _ := colorx.ParseHexColor(clockParams.FGColor1)
+	fgcol2, _ := colorx.ParseHexColor(clockParams.FGColor2)
 
 	for {
 		select {
 		case <-S.quit:
 			return
 		default:
-			ctx.SetColor(color.Black)
+			ctx.SetColor(bgcol)
 			ctx.Clear()
 
-			ctx.SetColor(color.White)
+			ctx.SetColor(fgcol2)
 			var t, x, y float64
 			var sec int
 			for t = 0; t <= DeuxPi; t += div12 {
@@ -82,7 +125,7 @@ func (S *Scenario) HorloLed() {
 			}
 			ctx.Stroke()
 
-			ctx.SetColor(color.RGBA{255, 0, 0, 255})
+			ctx.SetColor(fgcol1)
 			actual := time.Now()
 			timeString := actual.Format("15:04")
 			sec = 0

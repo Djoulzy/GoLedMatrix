@@ -51,15 +51,16 @@ func (h *HTTP) modulesHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *HTTP) testFunc(w http.ResponseWriter, r *http.Request) {
+func (h *HTTP) setControls(w http.ResponseWriter, r *http.Request) {
 	body, _ := ioutil.ReadAll(r.Body)
 
 	req := &scenario.ControlParams{}
 	json.Unmarshal(body, &req)
 
-	clog.Test("HTTPServer", "testFunc", "%v", req)
+	clog.Test("HTTPServer", "setControls", "%v", req)
 
 	h.scen.Control(req)
+	json.NewEncoder(w).Encode("OK")
 }
 
 func cropAndResize(src, dest string) {
@@ -143,7 +144,7 @@ func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	router.HandleFunc("/", h.homeHandler).Methods("GET")
 	router.HandleFunc("/modules/{module}", h.modulesHandler).Methods("GET")
 	router.HandleFunc("/upload", h.uploadMedia).Methods("POST")
-	router.HandleFunc("/test", h.testFunc).Methods("POST")
+	router.HandleFunc("/controls", h.setControls).Methods("POST")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./server/static"))))
 
 	host := fmt.Sprintf("%s:%d", config.HTTPserver.Addr, config.HTTPserver.Port)

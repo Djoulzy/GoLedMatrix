@@ -15,7 +15,7 @@ type Scenario struct {
 	conf     *confload.ConfigData
 	m        *rgbmatrix.Matrix
 	mode     int
-	controls *ControlParams
+	controls DataParams
 	quit     chan bool
 }
 
@@ -25,9 +25,9 @@ type ControlParams struct {
 }
 
 func (S *Scenario) Control(params *ControlParams) {
-	clog.Test("Scenario", "Control", "Starting mode: %d", params.Mode)
+	clog.Test("Scenario", "Control", "%v", params)
 	S.mode = params.Mode
-	S.controls = params
+	S.controls = params.ModuleParams
 	S.quit <- true
 }
 
@@ -40,20 +40,19 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	}
 	t := m.(rgbmatrix.Matrix)
 
+	S.mode = 1
+	S.controls = nil
 	S.m = &t
 	S.conf = config
 	S.tk = rgbmatrix.NewToolKit(t)
 	defer S.tk.Close()
 
-	S.controls = &ControlParams{
-		Mode:    1,
-	}
 	S.quit = make(chan bool, 0)
 
 	for {
-		switch S.controls.Mode {
+		switch S.mode {
 		case 1:
-			S.HorloLed()
+			S.OfficeRound()
 		case 2:
 			S.displayGif()
 		case 3:

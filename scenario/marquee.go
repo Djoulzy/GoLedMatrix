@@ -31,7 +31,7 @@ type TextAnim struct {
 
 func (S *Scenario) ScrollText() {
 	var scrollParams ScrollParams
-	mapstructure.Decode(S.controls.ModuleParams, &scrollParams)
+	mapstructure.Decode(S.controls, &scrollParams)
 
 	size := S.tk.Canvas.Bounds().Max
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
