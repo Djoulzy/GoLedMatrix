@@ -5,6 +5,9 @@ import (
 	"GoLedMatrix/confload"
 	"GoLedMatrix/emulator"
 	"GoLedMatrix/rgbmatrix"
+	"io/fs"
+	"io/ioutil"
+	"log"
 	"time"
 )
 
@@ -22,6 +25,25 @@ type Scenario struct {
 type ControlParams struct {
 	Mode         int        `json:"mode"`
 	ModuleParams DataParams `json:"params"`
+}
+
+func (S *Scenario) GetDirList(src map[string]string) []fs.FileInfo {
+	var path string
+
+	switch src["type"] {
+	case "img":
+	case "anim":
+	case "ttf":
+		path = S.conf.DefaultConf.FontDir
+	}
+	if serie, ok := src["serie"]; ok {
+		path += serie
+	}
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return files
 }
 
 func (S *Scenario) Control(params *ControlParams) {

@@ -29,7 +29,7 @@ var homeVars templateVars
 func (h *HTTP) homeHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t := template.New("")
-	if _, err = t.ParseFiles("./server/templates/home.html"); err != nil {
+	if _, err = t.ParseFiles("./server/templates/home.html", "./server/templates/headers.html"); err != nil {
 		clog.Fatal("HTTPServer", "homeHandler", err)
 	}
 	if err = t.ExecuteTemplate(w, "home", homeVars); err != nil {
@@ -41,13 +41,27 @@ func (h *HTTP) modulesHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	params := mux.Vars(r)
-	clog.Test("HTTPServer", "modulesHandler", "%v", params)
 	t := template.New("")
-	if _, err = t.ParseFiles("./server/templates/" + params["module"] + ".html"); err != nil {
+	if _, err = t.ParseFiles("./server/templates/"+params["module"]+".html", "./server/templates/headers.html"); err != nil {
 		clog.Fatal("HTTPServer", "modulesHandler", err)
 	}
 	if err = t.ExecuteTemplate(w, params["module"], homeVars); err != nil {
 		clog.Fatal("HTTPServer", "modulesHandler", err)
+	}
+}
+
+func (h *HTTP) getDir(w http.ResponseWriter, r *http.Request) {
+	var err error
+
+	params := mux.Vars(r)
+	clog.Test("HTTPServer", "getDir", "%v", params)
+	list := h.scen.GetDirList(params)
+	t := template.New("")
+	if _, err = t.ParseFiles("./server/templates/dirlist.html"); err != nil {
+		clog.Fatal("HTTPServer", "getDir", err)
+	}
+	if err = t.ExecuteTemplate(w, "dirlist", list); err != nil {
+		clog.Fatal("HTTPServer", "getDir", err)
 	}
 }
 
@@ -143,6 +157,8 @@ func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 
 	router.HandleFunc("/", h.homeHandler).Methods("GET")
 	router.HandleFunc("/modules/{module}", h.modulesHandler).Methods("GET")
+	router.HandleFunc("/getDir/{type}", h.getDir).Methods("GET")
+	router.HandleFunc("/getDir/{type}/{serie:[a-zA-Z0-9]+}", h.getDir).Methods("GET")
 	router.HandleFunc("/upload", h.uploadMedia).Methods("POST")
 	router.HandleFunc("/controls", h.setControls).Methods("POST")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./server/static"))))

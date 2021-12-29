@@ -13,10 +13,6 @@ type DefaultConf struct {
 	MediaDir string
 	TmpDir   string
 	FontDir  string
-	FgColor  string
-	BgColor  string
-	TimeFont string
-	TextFont string
 }
 
 type ConfigData struct {

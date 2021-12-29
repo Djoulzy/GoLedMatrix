@@ -28,12 +28,8 @@ Addr                    = 192.168.0.6
 Port                    = 80
 Enabled                 = true
 
-[Default]
+[DefaultConf]
 Mode                    = 1
 MediaDir                = "./media/"
 TmpDir                  = "./media/tmp/"
-FontDir                 = "./ttf/"
-FgColor                 = "#FF0000FF"
-BgColor                 = "#000000FF"
-TimeFont                = "modern/HappyBomb.ttf"
-TextFont                = "marquee/Bullpen3D.ttf"
+FontDir                 = "./media/ttf/"

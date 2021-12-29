@@ -4,6 +4,7 @@ body {
     height: 97vh;
     max-height: 600px;
     background-color: #222222;
+    color:rgb(3, 190, 3);
 }
 
 .menuItem {
@@ -16,4 +17,24 @@ button {
     font-size: 18px;
     width: 80%;
     height: 40px;
+}
+
+.colorSelect {
+    width: 100%;
+    text-align: center;
+}
+
+.colorSelect .colorItem{
+    display: inline-block;
+    margin: auto;
+}
+
+.colorSelect .colorPicker {
+    width: 80px;
+    height: 80px;
+}
+
+.mediaSelector {
+    display: inline-block;
+    margin: auto;
 }
