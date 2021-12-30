@@ -18,6 +18,11 @@ type displayLine struct {
 }
 
 func (S *Scenario) Startup() {
+	ticker := time.NewTicker(time.Second * 10)
+	defer func() {
+		ticker.Stop()
+	}()
+
 	size := S.tk.Canvas.Bounds().Max
 	strHeight := float64(8)
 	ctx := gg.NewContext(size.X, size.Y)
@@ -66,21 +71,26 @@ func (S *Scenario) Startup() {
 	}
 
 	for {
-		ctx.SetHexColor("#000000")
-		ctx.Clear()
-		for _, line := range lines {
-			ctx.SetHexColor(line.color)
-			ctx.DrawString(line.message, line.posx, line.posy)
-			if line.width > float64(size.X) {
-				line.posx += float64(line.dir)
-				if line.posx+line.width < float64(size.X) {
-					line.dir = 1
-				}
-				if line.posx == 5 {
-					line.dir = -1
+		select {
+		case <-ticker.C:
+			return
+		default:
+			ctx.SetHexColor("#000000")
+			ctx.Clear()
+			for _, line := range lines {
+				ctx.SetHexColor(line.color)
+				ctx.DrawString(line.message, line.posx, line.posy)
+				if line.width > float64(size.X) {
+					line.posx += float64(line.dir)
+					if line.posx+line.width < float64(size.X) {
+						line.dir = 1
+					}
+					if line.posx == 5 {
+						line.dir = -1
+					}
 				}
 			}
+			S.tk.PlayImage(ctx.Image(), time.Millisecond*50)
 		}
-		S.tk.PlayImage(ctx.Image(), time.Millisecond*50)
 	}
 }
