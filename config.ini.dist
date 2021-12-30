@@ -24,8 +24,8 @@ DropPrivileges          = 0
 DoGpioInit              = true
 
 [HTTPserver]
-Addr                    = 192.168.0.6
-Port                    = 80
+Addr                    = "detect"
+Port                    = 8080
 Enabled                 = true
 
 [DefaultConf]

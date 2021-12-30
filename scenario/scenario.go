@@ -71,6 +71,8 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 
 	S.quit = make(chan bool, 0)
 
+	S.Startup()
+
 	for {
 		switch S.mode {
 		case 1:

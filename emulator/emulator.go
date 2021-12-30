@@ -1,3 +1,4 @@
+//go:build !arm64
 // +build !arm64
 
 package emulator
@@ -18,7 +19,7 @@ import (
 	"gioui.org/unit"
 )
 
-const DefaultPixelPitch = 12
+const DefaultPixelPitch = 10
 const windowTitle = "RGB led matrix emulator"
 
 type Emulator struct {
