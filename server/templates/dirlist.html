@@ -1,5 +1,6 @@
 {{define "dirlist"}}
-    {{range .}}
-        <option value="{{.Name}}">{{.Name}}</option>
+    {{range .FList}}
+        <option value="{{.Name}}" {{if eq .Name $.DefVal}} selected{{end}}>{{.Name}}</option>
     {{end}}
+    {{.DefVal}}
 {{end}}

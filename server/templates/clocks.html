@@ -10,21 +10,45 @@
             <button type="button" class="modeSelect" data-mode="1">Office Round</button><br/>
             <br/>
             <div class="colorSelect">
-                <div class="colorItem">Background<br/><input class="colorPicker" id="bgcolor" type="color" value="#000000"/></div>
-                <div class="colorItem">Primary<br/><input class="colorPicker" id="fgcolor1" type="color" value="#FF0000"/></div>
-                <div class="colorItem">Secondary<br/><input class="colorPicker" id="fgcolor2" type="color" value="#FFFFFF"/></div>
+                <div class="colorItem">Background<br/><input class="colorPicker" id="bgcolor_1" type="color" value="#000000"/></div>
+                <div class="colorItem">Primary<br/><input class="colorPicker" id="fgcolor1_1" type="color" value="#FF0000"/></div>
+                <div class="colorItem">Secondary<br/><input class="colorPicker" id="fgcolor2_1" type="color" value="#FFFFFF"/></div>
             </div>
             <div>
                 <div class="mediaSelector">Serie<br/>
-                    <select id="fontSerie" class="serieSelector" data-target="faceSelect" data-default="digital">
+                    <select id="fontSerie_1" class="serieSelector" data-target="faceSelect_1" data-default="digital">
                     </select>
                 </div>
                 <div class="mediaSelector">Font<br/>
-                    <select id="faceSelect" class="fileSelector" data-default="TickingTimebomb.ttf">
+                    <select id="faceSelect_1" class="fileSelector" data-default="TickingTimebomb.ttf">
                     </select>
                 </div>
                 <div class="mediaSelector">Size<br/>
-                    <select id="sizeSelect" class="sizeSelector" data-default="38">
+                    <select id="sizeSelect_1" class="sizeSelector" data-default="38">
+                    </select>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="menuItem">
+            <button type="button" class="modeSelect" data-mode="5">Fancy Clock</button><br/>
+            <br/>
+            <div class="colorSelect">
+                <div class="colorItem">Background<br/><input class="colorPicker" id="bgcolor_5" type="color" value="#000000"/></div>
+                <div class="colorItem">Primary<br/><input class="colorPicker" id="fgcolor1_5" type="color" value="#FF8337"/></div>
+                <div class="colorItem">Secondary<br/><input class="colorPicker" id="fgcolor2_5" type="color" value="#7be0de"/></div>
+            </div>
+            <div>
+                <div class="mediaSelector">Serie<br/>
+                    <select id="fontSerie_5" class="serieSelector" data-target="faceSelect_5" data-default="modern">
+                    </select>
+                </div>
+                <div class="mediaSelector">Font<br/>
+                    <select id="faceSelect_5" class="fileSelector" data-default="HappyBomb.ttf">
+                    </select>
+                </div>
+                <div class="mediaSelector">Size<br/>
+                    <select id="sizeSelect_5" class="sizeSelector" data-default="55">
                     </select>
                 </div>
             </div>
@@ -36,14 +60,15 @@
         $(document).ready(function() {
 
             $(".modeSelect").on("click", function(e) {
+                var selectedMode = $(e.target).data("mode")
                 var mode = {
-                    mode: $(e.target).data("mode"),
+                    mode: selectedMode,
                     params: {
-                        bgcolor: $("#bgcolor").val(),
-                        fgcolor1: $("#fgcolor1").val(),
-                        fgcolor2: $("#fgcolor2").val(),
-                        fontface: $("#fontSerie").val()+"/"+$("#faceSelect").val(),
-                        fontsize: parseInt($("#sizeSelect").val(), 10),
+                        bgcolor: $("#bgcolor_"+selectedMode).val(),
+                        fgcolor1: $("#fgcolor1_"+selectedMode).val(),
+                        fgcolor2: $("#fgcolor2_"+selectedMode).val(),
+                        fontface: $("#fontSerie_"+selectedMode).val()+"/"+$("#faceSelect_"+selectedMode).val(),
+                        fontsize: parseInt($("#sizeSelect_"+selectedMode).val(), 10),
                     }
                 }
                 $.when(ajaxDataLoader("controls", 'json', 'POST', mode))
@@ -51,7 +76,7 @@
 
             $(".serieSelector").on("change", function(e) {
                 var dest = $(e.target).data("target")
-                var url = "getDir/ttf/"+$(e.target).val()+"?"+$(e.target).data("default")
+                var url = "getDir/ttf/"+$(e.target).val()+"?default="+$("#"+dest).data("default")
                 $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
                     $("#"+dest).html(data)
                 })
@@ -61,6 +86,7 @@
                 var url = "getDir/ttf?default="+$(elemt).data("default")
                 $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
                     $(elemt).html(data)
+                    $(elemt).trigger("change")
                 })
             })
 

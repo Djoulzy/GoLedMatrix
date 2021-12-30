@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io/fs"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -22,18 +23,13 @@ type HTTP struct {
 	scen *scenario.Scenario
 }
 
-type templateVars struct {
-}
-
-var homeVars templateVars
-
 func (h *HTTP) homeHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t := template.New("")
 	if _, err = t.ParseFiles("./server/templates/home.html", "./server/templates/headers.html"); err != nil {
 		clog.Fatal("HTTPServer", "homeHandler", err)
 	}
-	if err = t.ExecuteTemplate(w, "home", homeVars); err != nil {
+	if err = t.ExecuteTemplate(w, "home", nil); err != nil {
 		clog.Fatal("HTTPServer", "homeHandler", err)
 	}
 }
@@ -46,7 +42,7 @@ func (h *HTTP) modulesHandler(w http.ResponseWriter, r *http.Request) {
 	if _, err = t.ParseFiles("./server/templates/"+params["module"]+".html", "./server/templates/headers.html"); err != nil {
 		clog.Fatal("HTTPServer", "modulesHandler", err)
 	}
-	if err = t.ExecuteTemplate(w, params["module"], homeVars); err != nil {
+	if err = t.ExecuteTemplate(w, params["module"], nil); err != nil {
 		clog.Fatal("HTTPServer", "modulesHandler", err)
 	}
 }
@@ -54,33 +50,46 @@ func (h *HTTP) modulesHandler(w http.ResponseWriter, r *http.Request) {
 func (h *HTTP) getFontSize(w http.ResponseWriter, r *http.Request) {
 	var err error
 
+	var homeVars struct {
+		DefNum  int
+		NumList map[int]int
+	}
+
 	params := mux.Vars(r)
 	debut, _ := strconv.Atoi(params["start"])
 	fin, _ := strconv.Atoi(params["end"])
-	list := make(map[int]int)
+
+	homeVars.DefNum, _ = strconv.Atoi(r.URL.Query()["default"][0])
+	homeVars.NumList = make(map[int]int)
 	for i := debut; i <= fin; i++ {
-		list[i] = i
+		homeVars.NumList[i] = i
 	}
 	t := template.New("")
 	if _, err = t.ParseFiles("./server/templates/sizelist.html"); err != nil {
 		clog.Fatal("HTTPServer", "getFontSize", err)
 	}
-	if err = t.ExecuteTemplate(w, "sizelist", list); err != nil {
+	if err = t.ExecuteTemplate(w, "sizelist", homeVars); err != nil {
 		clog.Fatal("HTTPServer", "getFontSize", err)
 	}
 }
 
 func (h *HTTP) getDir(w http.ResponseWriter, r *http.Request) {
 	var err error
-
 	params := mux.Vars(r)
-	clog.Test("HTTPServer", "getDir", "%v", params)
-	list := h.scen.GetDirList(params)
+
+	var homeVars struct {
+		DefVal  string
+		FList   []fs.FileInfo
+	}
+
+	homeVars.DefVal = r.URL.Query()["default"][0]
+	homeVars.FList = h.scen.GetDirList(params)
+	clog.Warn("HTTPServer", "getDir", "%s", homeVars.DefVal)
 	t := template.New("")
 	if _, err = t.ParseFiles("./server/templates/dirlist.html"); err != nil {
 		clog.Fatal("HTTPServer", "getDir", err)
 	}
-	if err = t.ExecuteTemplate(w, "dirlist", list); err != nil {
+	if err = t.ExecuteTemplate(w, "dirlist", homeVars); err != nil {
 		clog.Fatal("HTTPServer", "getDir", err)
 	}
 }
@@ -173,7 +182,6 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	h.scen = S
 	router := mux.NewRouter()
-	homeVars = templateVars{}
 
 	router.HandleFunc("/", h.homeHandler).Methods("GET")
 	router.HandleFunc("/modules/{module}", h.modulesHandler).Methods("GET")

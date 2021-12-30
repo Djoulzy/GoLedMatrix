@@ -1,5 +1,5 @@
 {{define "sizelist"}}
-    {{range .}}
-        <option value="{{.}}">{{.}}</option>
+    {{range .NumList}}
+        <option value="{{.}}" {{if eq . $.DefNum}} selected{{end}}>{{.}}</option>
     {{end}}
 {{end}}

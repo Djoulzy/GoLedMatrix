@@ -3,7 +3,6 @@ package scenario
 import (
 	"GoLedMatrix/clog"
 	"image"
-	"image/color"
 	"math"
 	"math/rand"
 	"time"
@@ -63,17 +62,29 @@ func (S *Scenario) SimpleTime(text string) {
 }
 
 func (S *Scenario) FancyClock() {
+	defaultParams := ClockParams{
+		FontFace: "modern/HappyBomb.ttf",
+		FontSize: 55,
+		FGColor1: "#FF8337",
+		FGColor2: "#7be0de",
+		BGColor:  "#000000",
+	}
+	clockParams := validateParams(S.controls, &defaultParams)
+
 	size := S.tk.Canvas.Bounds().Max
 	ctx := gg.NewContext(size.X, size.Y)
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
-	ctx.LoadFontFace("./ttf/modern/HappyBomb.ttf", 55)
+	ctx.LoadFontFace(S.conf.DefaultConf.FontDir+clockParams.FontFace, float64(clockParams.FontSize))
+	bgcol, _ := colorx.ParseHexColor(clockParams.BGColor)
+	fgcol1, _ := colorx.ParseHexColor(clockParams.FGColor1)
+	fgcol2, _ := colorx.ParseHexColor(clockParams.FGColor2)
 
 	for {
 		select {
 		case <-S.quit:
 			return
 		default:
-			ctx.SetColor(color.Black)
+			ctx.SetColor(bgcol)
 			ctx.Clear()
 
 			actual := time.Now()
@@ -82,9 +93,9 @@ func (S *Scenario) FancyClock() {
 			timeHourWidth, _ := ctx.MeasureString(timeHour)
 			timeMinuteWidth, timeMinuteHeight := ctx.MeasureString(timeMinute)
 
-			ctx.SetColor(color.RGBA{255, 131, 0, 255})
+			ctx.SetColor(fgcol1)
 			ctx.DrawString(timeHour, float64(center.X)-(timeHourWidth/2), float64(center.Y))
-			ctx.SetColor(color.RGBA{123, 224, 222, 255})
+			ctx.SetColor(fgcol2)
 			ctx.DrawString(timeMinute, float64(center.X)-(timeMinuteWidth/2), float64(center.Y)+20+timeMinuteHeight)
 
 			S.tk.PlayImage(ctx.Image(), time.Second)
