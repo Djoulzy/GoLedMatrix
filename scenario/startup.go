@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
+	"github.com/hajimehoshi/bitmapfont"
 )
 
 func (S *Scenario) Startup() {
@@ -16,6 +17,7 @@ func (S *Scenario) Startup() {
 	ctx.Clear()
 	//ctx.LoadFontFace(S.conf.DefaultConf.FontDir+"fixed/November.ttf", 10)
 
+	ctx.SetFontFace(bitmapfont.Gothic10r)
 	message := "GoLedMatrix"
 
 	_, strHeight := ctx.MeasureString(message)

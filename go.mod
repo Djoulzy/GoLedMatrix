@@ -8,6 +8,7 @@ require (
 	github.com/go-ini/ini v1.66.2
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gorilla/mux v1.8.0
+	github.com/hajimehoshi/bitmapfont v1.3.1
 	github.com/icza/gox v0.0.0-20210726201659-cd40a3f8d324
 	github.com/mitchellh/mapstructure v1.1.2
 	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
@@ -21,4 +22,5 @@ require (
 	github.com/kr/pretty v0.2.1 // indirect
 	github.com/kr/text v0.1.0 // indirect
 	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
+	golang.org/x/text v0.3.6 // indirect
 )
