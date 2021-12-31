@@ -120,6 +120,13 @@ func (S *Scenario) OfficeRound() {
 	r1 := float64(center.Y) - 8
 	r2 := float64(center.Y) - 2
 
+	var dotSize float64
+	if size.X > 64 {
+		dotSize = 1
+	} else {
+		dotSize = 0.7
+	}
+
 	ctx.LoadFontFace(S.conf.DefaultConf.FontDir+clockParams.FontFace, float64(clockParams.FontSize))
 
 	for {
@@ -136,7 +143,7 @@ func (S *Scenario) OfficeRound() {
 			for t = 0; t <= DeuxPi; t += div12 {
 				x = float64(center.X) + r1*math.Cos(t)
 				y = float64(center.Y) + r1*math.Sin(t)
-				ctx.DrawPoint(x, y, 0.7)
+				ctx.DrawPoint(x, y, dotSize)
 			}
 			ctx.Stroke()
 
@@ -147,7 +154,7 @@ func (S *Scenario) OfficeRound() {
 			for t = 0; t <= DeuxPi; t += div60 {
 				x = float64(center.X) + r2*math.Cos(t-rotate)
 				y = float64(center.Y) + r2*math.Sin(t-rotate)
-				ctx.DrawPoint(x, y, 0.7)
+				ctx.DrawPoint(x, y, dotSize)
 				sec++
 				if sec > actual.Second() {
 					break
