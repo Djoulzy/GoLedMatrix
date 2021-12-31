@@ -20,7 +20,6 @@ type ClockParams struct {
 }
 
 func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
-	clog.Trace("clock", "validateParams", "%v", params)
 	var clockParams ClockParams
 	if params != nil {
 		if err := mapstructure.Decode(params, &clockParams); err != nil {
@@ -28,7 +27,6 @@ func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
 		}
 	}
 
-	clog.Trace("clock", "validateParams", "%v", clockParams)
 	if clockParams.FontFace == "" {
 		clockParams.FontFace = defParams.FontFace
 	}
@@ -44,8 +42,6 @@ func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
 	if clockParams.BGColor == "" {
 		clockParams.BGColor = defParams.BGColor
 	}
-
-	clog.Trace("clock", "validateParams", "%v", clockParams)
 	return &clockParams
 }
 

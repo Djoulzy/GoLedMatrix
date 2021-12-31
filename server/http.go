@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -78,8 +79,8 @@ func (h *HTTP) getDir(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 
 	var homeVars struct {
-		DefVal  string
-		FList   []fs.FileInfo
+		DefVal string
+		FList  []fs.FileInfo
 	}
 
 	homeVars.DefVal = r.URL.Query()["default"][0]
@@ -178,6 +179,15 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 	tempFile.Write(fileBytes)
 }
 
+func (h *HTTP) shutdown(w http.ResponseWriter, r *http.Request) {
+	_, err := exec.Command("bash", "-c", "poweroff").Output()
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+	} else {
+		json.NewEncoder(w).Encode("OK")
+	}
+}
+
 // StartHTTP : Lance le server HTTP
 func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	h.scen = S
@@ -191,6 +201,7 @@ func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	router.HandleFunc("/upload", h.uploadMedia).Methods("POST")
 	router.HandleFunc("/controls", h.setControls).Methods("POST")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./server/static"))))
+	router.HandleFunc("/shutdown", h.shutdown).Methods("GET")
 
 	host := fmt.Sprintf("%s:%d", config.HTTPserver.Addr, config.HTTPserver.Port)
 	clog.Output("HTTP Server starting listening on %s", host)
