@@ -182,6 +182,7 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 func (h *HTTP) shutdown(w http.ResponseWriter, r *http.Request) {
 	_, err := exec.Command("bash", "-c", "poweroff").Output()
 	if err != nil {
+		clog.Error("HTTPServer", "shutdown", "%s", err)
 		json.NewEncoder(w).Encode(err)
 	} else {
 		json.NewEncoder(w).Encode("OK")
