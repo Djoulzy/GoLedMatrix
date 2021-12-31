@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
-	"github.com/icza/gox/imagex/colorx"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -75,16 +74,13 @@ func (S *Scenario) FancyClock() {
 	ctx := gg.NewContext(size.X, size.Y)
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
 	ctx.LoadFontFace(S.conf.DefaultConf.FontDir+clockParams.FontFace, float64(clockParams.FontSize))
-	bgcol, _ := colorx.ParseHexColor(clockParams.BGColor)
-	fgcol1, _ := colorx.ParseHexColor(clockParams.FGColor1)
-	fgcol2, _ := colorx.ParseHexColor(clockParams.FGColor2)
 
 	for {
 		select {
 		case <-S.quit:
 			return
 		default:
-			ctx.SetColor(bgcol)
+			ctx.SetHexColor(clockParams.BGColor)
 			ctx.Clear()
 
 			actual := time.Now()
@@ -93,9 +89,9 @@ func (S *Scenario) FancyClock() {
 			timeHourWidth, _ := ctx.MeasureString(timeHour)
 			timeMinuteWidth, timeMinuteHeight := ctx.MeasureString(timeMinute)
 
-			ctx.SetColor(fgcol1)
+			ctx.SetHexColor(clockParams.FGColor1)
 			ctx.DrawString(timeHour, float64(center.X)-(timeHourWidth/2), float64(center.Y))
-			ctx.SetColor(fgcol2)
+			ctx.SetHexColor(clockParams.FGColor2)
 			ctx.DrawString(timeMinute, float64(center.X)-(timeMinuteWidth/2), float64(center.Y)+20+timeMinuteHeight)
 
 			S.tk.PlayImage(ctx.Image(), time.Second)
@@ -104,6 +100,7 @@ func (S *Scenario) FancyClock() {
 }
 
 func (S *Scenario) OfficeRound() {
+
 	defaultParams := ClockParams{
 		FontFace: "digital/TickingTimebomb.ttf",
 		FontSize: 38,
@@ -124,36 +121,33 @@ func (S *Scenario) OfficeRound() {
 	r2 := float64(center.Y) - 2
 
 	ctx.LoadFontFace(S.conf.DefaultConf.FontDir+clockParams.FontFace, float64(clockParams.FontSize))
-	bgcol, _ := colorx.ParseHexColor(clockParams.BGColor)
-	fgcol1, _ := colorx.ParseHexColor(clockParams.FGColor1)
-	fgcol2, _ := colorx.ParseHexColor(clockParams.FGColor2)
 
 	for {
 		select {
 		case <-S.quit:
 			return
 		default:
-			ctx.SetColor(bgcol)
+			ctx.SetHexColor(clockParams.BGColor)
 			ctx.Clear()
 
-			ctx.SetColor(fgcol2)
+			ctx.SetHexColor(clockParams.FGColor2)
 			var t, x, y float64
 			var sec int
 			for t = 0; t <= DeuxPi; t += div12 {
 				x = float64(center.X) + r1*math.Cos(t)
 				y = float64(center.Y) + r1*math.Sin(t)
-				ctx.DrawPoint(x, y, 1)
+				ctx.DrawPoint(x, y, 0.7)
 			}
 			ctx.Stroke()
 
-			ctx.SetColor(fgcol1)
+			ctx.SetHexColor(clockParams.FGColor1)
 			actual := time.Now()
 			timeString := actual.Format("15:04")
 			sec = 0
 			for t = 0; t <= DeuxPi; t += div60 {
 				x = float64(center.X) + r2*math.Cos(t-rotate)
 				y = float64(center.Y) + r2*math.Sin(t-rotate)
-				ctx.DrawPoint(x, y, 1)
+				ctx.DrawPoint(x, y, 0.7)
 				sec++
 				if sec > actual.Second() {
 					break
