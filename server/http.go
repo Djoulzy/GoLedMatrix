@@ -180,7 +180,7 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HTTP) shutdown(w http.ResponseWriter, r *http.Request) {
-	out, err := exec.Command("/usr/bin/sudo", "/usr/sbin/shutdown", "-h", "now").Output()
+	out, err := exec.Command("/usr/bin/sudo", "--preserve-env", "/usr/sbin/shutdown", "-h", "now").Output()
 	if err != nil {
 		clog.Error("HTTPServer", "shutdown", "%s - %s", out, err)
 		json.NewEncoder(w).Encode(err)
