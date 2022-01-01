@@ -19,7 +19,7 @@ type ClockParams struct {
 	FontSize int    `json:"fontsize"`
 }
 
-func validateParams(params DataParams, defParams *ClockParams) *ClockParams {
+func validateClockParams(params DataParams, defParams *ClockParams) *ClockParams {
 	var clockParams ClockParams
 	if params != nil {
 		if err := mapstructure.Decode(params, &clockParams); err != nil {
@@ -64,7 +64,7 @@ func (S *Scenario) FancyClock() {
 		FGColor2: "#7be0de",
 		BGColor:  "#000000",
 	}
-	clockParams := validateParams(S.controls, &defaultParams)
+	clockParams := validateClockParams(S.controls, &defaultParams)
 
 	size := S.tk.Canvas.Bounds().Max
 	ctx := gg.NewContext(size.X, size.Y)
@@ -104,7 +104,7 @@ func (S *Scenario) OfficeRound() {
 		FGColor2: "#FFFFFF",
 		BGColor:  "#000000",
 	}
-	clockParams := validateParams(S.controls, &defaultParams)
+	clockParams := validateClockParams(S.controls, &defaultParams)
 
 	size := S.tk.Canvas.Bounds().Max
 	ctx := gg.NewContext(size.X, size.Y)

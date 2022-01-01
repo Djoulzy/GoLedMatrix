@@ -1,6 +1,7 @@
 package scenario
 
 import (
+	"GoLedMatrix/clog"
 	"image"
 	"image/color"
 	"time"
@@ -29,9 +30,49 @@ type TextAnim struct {
 	Quit      chan bool
 }
 
+type MarqueeParams struct {
+	FGColor1 string `json:"fgcolor1"`
+	BGColor  string `json:"bgcolor"`
+	Message  string `json:"message"`
+	FontFace string `json:"fontface"`
+	FontSize int    `json:"fontsize"`
+}
+
+func validateMarqueeParams(params DataParams, defParams *MarqueeParams) *MarqueeParams {
+	var marqueeParams MarqueeParams
+	if params != nil {
+		if err := mapstructure.Decode(params, &marqueeParams); err != nil {
+			clog.Fatal("Marquee", "validateMarqueeParams", err)
+		}
+	}
+
+	if marqueeParams.FontFace == "" {
+		marqueeParams.FontFace = defParams.FontFace
+	}
+	if marqueeParams.FontSize == 0 {
+		marqueeParams.FontSize = defParams.FontSize
+	}
+	if marqueeParams.FGColor1 == "" {
+		marqueeParams.FGColor1 = defParams.FGColor1
+	}
+	if marqueeParams.Message == "" {
+		marqueeParams.Message = defParams.Message
+	}
+	if marqueeParams.BGColor == "" {
+		marqueeParams.BGColor = defParams.BGColor
+	}
+	return &marqueeParams
+}
+
 func (S *Scenario) ScrollText() {
-	var scrollParams ScrollParams
-	mapstructure.Decode(S.controls, &scrollParams)
+	defaultParams := MarqueeParams{
+		FontFace: "marquee/Bullpen3D.ttf",
+		FontSize: 40,
+		FGColor1: "#FF8337",
+		Message:  "GoLedMatrix",
+		BGColor:  "#000000",
+	}
+	scrollParams := validateMarqueeParams(S.controls, &defaultParams)
 
 	size := S.tk.Canvas.Bounds().Max
 	center := image.Point{X: size.X / 2, Y: size.Y / 2}
@@ -40,14 +81,14 @@ func (S *Scenario) ScrollText() {
 		ctx:      gg.NewContext(size.X, size.Y),
 		dir:      image.Point{-1, 0},
 		position: image.Point{128, 64},
-		message:  scrollParams.Text,
+		message:  scrollParams.Message,
 		Quit:     S.quit,
 	}
 
-	anim.ctx.LoadFontFace("./ttf/marquee/Bullpen3D.ttf", 40)
-	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(scrollParams.Text)
+	anim.ctx.LoadFontFace(S.conf.DefaultConf.FontDir+scrollParams.FontFace, float64(scrollParams.FontSize))
+	anim.txtWidth, anim.txtHeight = anim.ctx.MeasureString(scrollParams.Message)
 	anim.position = image.Point{size.X, center.Y + int(anim.txtHeight/2)}
-	anim.col, _ = colorx.ParseHexColor(scrollParams.FGColor)
+	anim.col, _ = colorx.ParseHexColor(scrollParams.FGColor1)
 
 	S.tk.PlayAnimation(anim)
 }

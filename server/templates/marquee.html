@@ -3,32 +3,80 @@
 <html>
     {{template "headers"}}
     <body>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="4">Start</button></div>
-         
-        <input id="mColor" type="color" />
-        <input id="mText" type="text" />
+        <h1>Marquee</h1>
+
+        <hr>
+        <div class="menuItem">
+            <button type="button" class="modeSelect" data-mode="4">Classic</button><br/>
+            <br/>
+            <div class="colorSelect">
+                <div class="colorItem">Background<br/><input class="colorPicker" id="bgcolor_4" type="color" value="#000000"/></div>
+                <div class="colorItem">Foreground<br/><input class="colorPicker" id="fgcolor1_4" type="color" value="#FF0000"/></div>
+            </div>
+            <div>
+                <div class="mediaSelector">Serie<br/>
+                    <select id="fontSerie_4" class="serieSelector" data-target="faceSelect_4" data-default="marquee">
+                    </select>
+                </div>
+                <div class="mediaSelector">Font<br/>
+                    <select id="faceSelect_4" class="fileSelector" data-default="Bullpen3D.ttf">
+                    </select>
+                </div>
+                <div class="mediaSelector">Size<br/>
+                    <select id="sizeSelect_4" class="sizeSelector" data-default="40">
+                    </select>
+                </div>
+            </div>
+            <div>
+                <input class="colorPicker" id="text_4" type="text" value="GoLedMatrixt"/>
+            </div>
+        </div>
+        <hr>
 
         <script src="/static/tools.js"></script>
         <script>
-        $(document).ready(function() {
-
-            $(".modeSelect").on("click", function(e) {
-                var mode = $(e.target).data("mode")
-                var color = $("#mColor").val()
-                var texte = $("#mText").val()
-                console.log(color)
-                const params = {
-                    mode: mode,
-                    text: texte,
-                    color: color,
-                }
-                $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
-        
+            $(document).ready(function() {
+    
+                $(".modeSelect").on("click", function(e) {
+                    var selectedMode = $(e.target).data("mode")
+                    var mode = {
+                        mode: selectedMode,
+                        params: {
+                            message: $("#text_"+selectedMode).val(),
+                            bgcolor: $("#bgcolor_"+selectedMode).val(),
+                            fgcolor1: $("#fgcolor1_"+selectedMode).val(),
+                            fontface: $("#fontSerie_"+selectedMode).val()+"/"+$("#faceSelect_"+selectedMode).val(),
+                            fontsize: parseInt($("#sizeSelect_"+selectedMode).val(), 10),
+                        }
+                    }
+                    $.when(ajaxDataLoader("controls", 'json', 'POST', mode))
                 })
-            })
-        
-        });
-        </script>
+    
+                $(".serieSelector").on("change", function(e) {
+                    var dest = $(e.target).data("target")
+                    var url = "getDir/ttf/"+$(e.target).val()+"?default="+$("#"+dest).data("default")
+                    $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
+                        $("#"+dest).html(data)
+                    })
+                })
+    
+                $(".serieSelector").each(function(index, elemt) {
+                    var url = "getDir/ttf?default="+$(elemt).data("default")
+                    $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
+                        $(elemt).html(data)
+                        $(elemt).trigger("change")
+                    })
+                })
+    
+                $(".sizeSelector").each(function(index, elemt) {
+                    var url = "getSize/10/100?default="+$(elemt).data("default")
+                    $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
+                        $(elemt).html(data)
+                    })
+                }) 
+            
+            });
+            </script>
     </body>
 </html>
 {{end}}
