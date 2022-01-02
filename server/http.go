@@ -21,13 +21,17 @@ import (
 )
 
 type HTTP struct {
-	scen *scenario.Scenario
+	scen        *scenario.Scenario
+	templateDir string
+	staticDir   string
+	tempDir     string
+	imgDir      string
 }
 
 func (h *HTTP) homeHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	t := template.New("")
-	if _, err = t.ParseFiles("./server/templates/home.html", "./server/templates/headers.html"); err != nil {
+	if _, err = t.ParseFiles(h.templateDir+"home.html", h.templateDir+"headers.html"); err != nil {
 		clog.Fatal("HTTPServer", "homeHandler", err)
 	}
 	if err = t.ExecuteTemplate(w, "home", nil); err != nil {
@@ -40,7 +44,7 @@ func (h *HTTP) modulesHandler(w http.ResponseWriter, r *http.Request) {
 
 	params := mux.Vars(r)
 	t := template.New("")
-	if _, err = t.ParseFiles("./server/templates/"+params["module"]+".html", "./server/templates/headers.html"); err != nil {
+	if _, err = t.ParseFiles(h.templateDir+params["module"]+".html", h.templateDir+"headers.html"); err != nil {
 		clog.Fatal("HTTPServer", "modulesHandler", err)
 	}
 	if err = t.ExecuteTemplate(w, params["module"], nil); err != nil {
@@ -66,7 +70,7 @@ func (h *HTTP) getFontSize(w http.ResponseWriter, r *http.Request) {
 		homeVars.NumList[i] = i
 	}
 	t := template.New("")
-	if _, err = t.ParseFiles("./server/templates/sizelist.html"); err != nil {
+	if _, err = t.ParseFiles(h.templateDir + "sizelist.html"); err != nil {
 		clog.Fatal("HTTPServer", "getFontSize", err)
 	}
 	if err = t.ExecuteTemplate(w, "sizelist", homeVars); err != nil {
@@ -87,7 +91,7 @@ func (h *HTTP) getDir(w http.ResponseWriter, r *http.Request) {
 	homeVars.FList = h.scen.GetDirList(params)
 	clog.Warn("HTTPServer", "getDir", "%s", homeVars.DefVal)
 	t := template.New("")
-	if _, err = t.ParseFiles("./server/templates/dirlist.html"); err != nil {
+	if _, err = t.ParseFiles(h.templateDir + "dirlist.html"); err != nil {
 		clog.Fatal("HTTPServer", "getDir", err)
 	}
 	if err = t.ExecuteTemplate(w, "dirlist", homeVars); err != nil {
@@ -107,7 +111,7 @@ func (h *HTTP) setControls(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("OK")
 }
 
-func cropAndResize(src, dest string) {
+func (h *HTTP) cropAndResize(src, dest string) {
 	imagick.Initialize()
 	defer imagick.Terminate()
 
@@ -146,7 +150,7 @@ func cropAndResize(src, dest string) {
 	if err = mw.ResizeImage(128, 128, imagick.FILTER_LANCZOS2_SHARP); err != nil {
 		clog.Fatal("cropAndResize", "ResizeImage", err)
 	}
-	if err = mw.WriteImage("./media/img/" + fileInfos[0] + ".jpg"); err != nil {
+	if err = mw.WriteImage(h.imgDir + fileInfos[0] + ".jpg"); err != nil {
 		clog.Fatal("cropAndResize", "WriteImage", err)
 	}
 }
@@ -161,14 +165,14 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	tempFile, err := ioutil.TempFile("./media/tmp", "tmp-*")
+	tempFile, err := ioutil.TempFile(h.tempDir, "tmp-*")
 	if err != nil {
 		clog.Error("HTTPServer", "uploadMedia", "%s", err)
 	}
 	defer func() {
 		tempFile.Close()
 		clog.Trace("HTTPServer", "uploadMedia", "%s %s", tempFile.Name(), handler.Filename)
-		cropAndResize(tempFile.Name(), handler.Filename)
+		h.cropAndResize(tempFile.Name(), handler.Filename)
 		os.Remove(tempFile.Name())
 	}()
 
@@ -193,6 +197,10 @@ func (h *HTTP) shutdown(w http.ResponseWriter, r *http.Request) {
 func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	h.scen = S
 	router := mux.NewRouter()
+	h.templateDir = config.DefaultConf.InstallDir + "server/templates/"
+	h.staticDir = config.DefaultConf.InstallDir + "server/static/"
+	h.tempDir = config.DefaultConf.TmpDir
+	h.imgDir = config.DefaultConf.MediaDir + "img/"
 
 	router.HandleFunc("/", h.homeHandler).Methods("GET")
 	router.HandleFunc("/modules/{module}", h.modulesHandler).Methods("GET")

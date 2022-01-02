@@ -9,10 +9,10 @@ type HTTPserver struct {
 }
 
 type DefaultConf struct {
-	Mode     int
-	MediaDir string
-	TmpDir   string
-	FontDir  string
+	InstallDir string
+	MediaDir   string
+	TmpDir     string
+	FontDir    string
 }
 
 type ConfigData struct {
