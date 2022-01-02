@@ -209,7 +209,7 @@ func (h *HTTP) StartHTTP(config *confload.ConfigData, S *scenario.Scenario) {
 	router.HandleFunc("/getSize/{start}/{end}", h.getFontSize).Methods("GET")
 	router.HandleFunc("/upload", h.uploadMedia).Methods("POST")
 	router.HandleFunc("/controls", h.setControls).Methods("POST")
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./server/static"))))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir(h.staticDir))))
 	router.HandleFunc("/shutdown", h.shutdown).Methods("GET")
 
 	host := fmt.Sprintf("%s:%d", config.HTTPserver.Addr, config.HTTPserver.Port)

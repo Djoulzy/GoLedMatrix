@@ -1,0 +1,35 @@
+[HardwareConfig]
+Rows                    = 32
+Cols                    = 64
+ChainLength             = 4
+Parallel                = 2
+
+PWMBits                 = 11
+PWMLSBNanoseconds       = 130
+PWMDitherBits           = 0
+Brightness              = 100
+ScanMode                = 0
+HardwareMapping         = "regular"
+ShowRefreshRate         = true
+InverseColors           = false
+DisableHardwarePulsing  = false
+PixelMapperConfig       = "V-mapper"
+LimitRefreshRateHz      = 70
+Multiplexing            = 0
+
+[RuntimeOptions]
+GpioSlowdown            = 2
+Daemon                  = 0
+DropPrivileges          = -1
+DoGpioInit              = true
+
+[HTTPserver]
+Addr                    = "detect"
+Port                    = 8080
+Enabled                 = true
+
+[DefaultConf]
+InstallDir              = "/home/dietpi/go/src/GoLedMatrix/"
+MediaDir                = "/home/dietpi/go/src/GoLedMatrix/media/"
+TmpDir                  = "/home/dietpi/go/src/GoLedMatrix/media/tmp/"
+FontDir                 = "/home/dietpi/go/src/GoLedMatrix/media/ttf/"
