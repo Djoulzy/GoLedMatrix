@@ -6,21 +6,21 @@ Parallel                = 2
 
 PWMBits                 = 11
 PWMLSBNanoseconds       = 130
-PWMDitherBits           = 0
+PWMDitherBits           = 1
 Brightness              = 100
 ScanMode                = 0
 HardwareMapping         = "regular"
 ShowRefreshRate         = true
 InverseColors           = false
 DisableHardwarePulsing  = false
-PixelMapperConfig       = "V-mapper:Z"
-LimitRefreshRateHz      = 70
+PixelMapperConfig       = "V-mapper"
+LimitRefreshRateHz      = 0
 Multiplexing            = 0
 
 [RuntimeOptions]
-GpioSlowdown            = 2
+GpioSlowdown            = 5
 Daemon                  = 0
-DropPrivileges          = 0
+DropPrivileges          = -1
 DoGpioInit              = true
 
 [HTTPserver]
@@ -30,6 +30,6 @@ Enabled                 = true
 
 [DefaultConf]
 Mode                    = 1
-MediaDir                = "./media/"
-TmpDir                  = "./media/tmp/"
-FontDir                 = "./media/ttf/"
+MediaDir                = "/home/dietpi/go/src/GoLedMatrix/media/"
+TmpDir                  = "/home/dietpi/go/src/GoLedMatrix/media/tmp/"
+FontDir                 = "/home/dietpi/go/src/GoLedMatrix/media/ttf/"
