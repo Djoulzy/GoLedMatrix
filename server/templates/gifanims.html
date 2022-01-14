@@ -3,23 +3,42 @@
 <html>
     {{template "headers"}}
     <body>
-        <div class="menuItem"><button type="button" class="modeSelect" data-mode="2">Start</button></div>
-         
+        <h1>GIF Anims</h1>
+
+        <hr>
+        <div class="menuItem">
+            <button type="button" class="modeSelect" data-mode="2">Start</button><br/>
+            <br/>
+            <div>
+                <div class="mediaSelector">Serie<br/>
+                    <select id="gifSerie_2" class="serieSelector" data-default="fun">
+                    </select>
+                </div>
+            </div>
+        </div>
          <script src="/static/tools.js"></script>
          <script>
             $(document).ready(function() {
 
                 $(".modeSelect").on("click", function(e) {
-                    var mode = $(e.target).data("mode")
-                    const params = {
-                        mode: mode,
-                        serie: 'christmas',
+                var selectedMode = $(e.target).data("mode")
+                var mode = {
+                    mode: selectedMode,
+                    params: {
+                        serie: $("#gifSerie_"+selectedMode).val(),
                     }
-                    $.when(ajaxDataLoader("test", 'html', 'POST', params)).done(function(data) {
+                }
+                $.when(ajaxDataLoader("controls", 'json', 'POST', mode))
+            })
             
-                    })
+            $(".serieSelector").each(function(index, elemt) {
+                var url = "getDir/anim?default="+$(elemt).data("default")
+                $.when(ajaxDataLoader(url, 'html', 'GET')).done(function(data) {
+                    $(elemt).html(data)
+                    $(elemt).trigger("change")
                 })
-            
+            })
+
             });
          </script>
     </body>

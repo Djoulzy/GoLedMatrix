@@ -33,6 +33,7 @@ func (S *Scenario) GetDirList(src map[string]string) []fs.FileInfo {
 	switch src["type"] {
 	case "img":
 	case "anim":
+		path = S.conf.DefaultConf.MediaDir + "anim"
 	case "ttf":
 		path = S.conf.DefaultConf.FontDir
 	}

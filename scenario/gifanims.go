@@ -12,13 +12,28 @@ import (
 )
 
 type GifParams struct {
-	Image string `json:"image"`
 	Serie string `json:"serie"`
 }
 
-func (S *Scenario) displayGif() {
+func validateGifParams(params DataParams, defParams *GifParams) *GifParams {
 	var gifParams GifParams
-	mapstructure.Decode(S.controls, &gifParams)
+	if params != nil {
+		if err := mapstructure.Decode(params, &gifParams); err != nil {
+			clog.Fatal("gif_anims", "validateParams", err)
+		}
+	}
+
+	if gifParams.Serie == "" {
+		gifParams.Serie = defParams.Serie
+	}
+	return &gifParams
+}
+
+func (S *Scenario) displayGif() {
+	defaultParams := GifParams{
+		Serie: "fun",
+	}
+	gifParams := validateGifParams(S.controls, &defaultParams)
 
 	ticker := time.NewTicker(time.Second * 10)
 	defer func() {
