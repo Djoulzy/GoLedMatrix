@@ -29,10 +29,29 @@ type ToolKit struct {
 	Transform func(img image.Image) *image.NRGBA
 }
 
+type Sprite struct {
+	ScreenSize image.Point
+	Size       image.Point
+	Pos        image.Point
+	Dir        int
+	Draw       func(interface{})
+	Text       string
+	BgColor    string
+	FgColor    string
+}
+
 // NewToolKit returns a new ToolKit wrapping the given Matrix
 func NewToolKit(m Matrix) *ToolKit {
 	return &ToolKit{
 		Canvas: NewCanvas(m),
+	}
+}
+
+func (tk *ToolKit) NewSprite(width, height int, x, y int) *Sprite {
+	return &Sprite{
+		ScreenSize: tk.Canvas.Bounds().Max,
+		Size:       image.Point{width, height},
+		Pos:        image.Point{x, y},
 	}
 }
 
@@ -65,7 +84,7 @@ func (tk *ToolKit) PlayAnimation(a Animation) error {
 	for {
 		select {
 		case <-quit:
-			return nil;
+			return nil
 		default:
 			i, n, err = a.Next()
 			if err != nil {
@@ -195,4 +214,17 @@ func (tk *ToolKit) DrawText(lines []string, x, y int, fontfile string, size, spa
 // Close close the toolkit and the inner canvas
 func (tk *ToolKit) Close() error {
 	return tk.Canvas.Close()
+}
+
+func (S *Sprite) Move() {
+	S.Draw(S)
+	if S.Size.X > S.ScreenSize.X {
+		S.Pos.X += S.Dir
+		if S.Pos.X+S.Size.X < S.ScreenSize.X {
+			S.Dir = 1
+		}
+		if S.Pos.X == 5 {
+			S.Dir = -1
+		}
+	}
 }

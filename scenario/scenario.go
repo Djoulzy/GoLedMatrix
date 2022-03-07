@@ -63,7 +63,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	}
 	t := m.(rgbmatrix.Matrix)
 
-	S.mode = 1
+	S.mode = 6
 	S.controls = nil
 	S.m = &t
 	S.conf = config
@@ -86,6 +86,8 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 			S.ScrollText()
 		case 5:
 			S.FancyClock()
+		case 6:
+			S.Business()
 		}
 	}
 }

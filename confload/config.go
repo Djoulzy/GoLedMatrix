@@ -15,9 +15,16 @@ type DefaultConf struct {
 	FontDir    string
 }
 
+type API struct {
+	QuoteURL     string
+	QuoteKey     string
+	QuoteSymbols string
+}
+
 type ConfigData struct {
 	rgbmatrix.HardwareConfig
 	rgbmatrix.RuntimeOptions
 	HTTPserver
 	DefaultConf
+	API
 }
