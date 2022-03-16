@@ -63,7 +63,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	}
 	t := m.(rgbmatrix.Matrix)
 
-	S.mode = 6
+	S.mode = 1
 	S.controls = nil
 	S.m = &t
 	S.conf = config
