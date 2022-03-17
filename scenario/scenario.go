@@ -57,13 +57,13 @@ func (S *Scenario) Control(params *ControlParams) {
 func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 	switch m.(type) {
 	case emulator.Emulator:
-		duration := time.Second * 2
+		duration := time.Second * 1
 		time.Sleep(duration)
 	case rgbmatrix.Matrix:
 	}
 	t := m.(rgbmatrix.Matrix)
 
-	S.mode = 1
+	S.mode = config.DefaultConf.Mode
 	S.controls = nil
 	S.m = &t
 	S.conf = config

@@ -1,7 +1,7 @@
 package scenario
 
 import (
-	anim "GoLedMatrix/anims"
+	"GoLedMatrix/rgbmatrix"
 	"fmt"
 	"image"
 	"time"
@@ -12,18 +12,18 @@ import (
 
 type Startup struct {
 	ctx    *gg.Context
-	sprite []*anim.Sprite
+	sprite []*rgbmatrix.Sprite
 	req    StockResponse
 }
 
 func (S *Startup) DrawLine(param interface{}) {
-	sprite := param.(*anim.Sprite)
+	sprite := param.(*rgbmatrix.Sprite)
 	S.ctx.SetHexColor(sprite.FgColor)
 	S.ctx.DrawString(sprite.Text, float64(sprite.Pos.X), float64(sprite.Pos.Y))
 }
 
 func (S *Scenario) Startup() {
-	ticker := time.NewTicker(time.Second * 10)
+	ticker := time.NewTicker(time.Second * time.Duration(S.conf.DefaultConf.StartUpDelay))
 	defer func() {
 		ticker.Stop()
 	}()
@@ -35,46 +35,46 @@ func (S *Scenario) Startup() {
 	startup.ctx = gg.NewContext(size.X, size.Y)
 	startup.ctx.SetFontFace(bitmapfont.Gothic10r)
 
-	startup.sprite = make([]*anim.Sprite, 4)
+	startup.sprite = make([]*rgbmatrix.Sprite, 4)
 
-	startup.sprite[0] = &anim.Sprite{
+	startup.sprite[0] = &rgbmatrix.Sprite{
 		ScreenSize: size,
 		Size:       image.Point{len("GOLedMatrix") * 5, strHeight},
 		Pos:        image.Point{5, strHeight},
 		Text:       "GOLedMatrix",
 		FgColor:    "#FF0000",
-		Dir:        -1,
+		DirX:       -1,
 		Draw:       startup.DrawLine,
 	}
 
-	startup.sprite[1] = &anim.Sprite{
+	startup.sprite[1] = &rgbmatrix.Sprite{
 		ScreenSize: size,
 		Size:       image.Point{len("v0.99 Build 2021-12-30") * 5, strHeight},
 		Pos:        image.Point{5, strHeight * 2},
 		Text:       "v0.99 Build 2021-12-30",
 		FgColor:    "#f29d0c",
-		Dir:        -1,
+		DirX:       -1,
 		Draw:       startup.DrawLine,
 	}
 
-	startup.sprite[2] = &anim.Sprite{
+	startup.sprite[2] = &rgbmatrix.Sprite{
 		ScreenSize: size,
 		Size:       image.Point{len("Listen:") * 5, strHeight},
 		Pos:        image.Point{5, strHeight * 3},
 		Text:       "Listen:",
 		FgColor:    "#FF0000",
-		Dir:        -1,
+		DirX:       -1,
 		Draw:       startup.DrawLine,
 	}
 
 	tmp := fmt.Sprintf("http://%s:%d", S.conf.HTTPserver.Addr, S.conf.HTTPserver.Port)
-	startup.sprite[3] = &anim.Sprite{
+	startup.sprite[3] = &rgbmatrix.Sprite{
 		ScreenSize: size,
 		Size:       image.Point{len(tmp) * 5, strHeight},
 		Pos:        image.Point{5, strHeight * 4},
 		Text:       tmp,
 		FgColor:    "#ffe900",
-		Dir:        -1,
+		DirX:       -1,
 		Draw:       startup.DrawLine,
 	}
 

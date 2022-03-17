@@ -9,16 +9,19 @@ type HTTPserver struct {
 }
 
 type DefaultConf struct {
-	InstallDir string
-	MediaDir   string
-	TmpDir     string
-	FontDir    string
+	StartUpDelay int
+	InstallDir   string
+	MediaDir     string
+	TmpDir       string
+	FontDir      string
+	Mode         int
 }
 
 type API struct {
-	QuoteURL     string
-	QuoteKey     string
-	QuoteSymbols string
+	QuoteURL      string
+	QuoteKey      string
+	QuoteSymbols  string
+	QuoteInterval int
 }
 
 type ConfigData struct {

@@ -29,6 +29,7 @@ Port                    = 8080
 Enabled                 = true
 
 [DefaultConf]
+StartUpDelay            = 1
 InstallDir              = "/home/dietpi/go/src/GoLedMatrix/"
 MediaDir                = "/home/dietpi/go/src/GoLedMatrix/media/"
 TmpDir                  = "/home/dietpi/go/src/GoLedMatrix/media/tmp/"
@@ -38,3 +39,4 @@ FontDir                 = "/home/dietpi/go/src/GoLedMatrix/media/ttf/"
 QuoteURL                = "https://yfapi.net/v6/finance/quote?region=FR&lang=fr&symbols="
 QuoteKey                = "o8Jx9ekjip3mmh6EqXs7p4oAyThQEanT2KmgOzH5"
 QuoteSymbols            = "NEBL-EUR,ALGO-EUR,DOGE-EUR,VIV.PA"
+QuoteInterval           = 10

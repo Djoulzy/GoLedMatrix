@@ -1,7 +1,9 @@
 package scenario
 
 import (
-	anim "GoLedMatrix/anims"
+	"GoLedMatrix/clog"
+	"GoLedMatrix/rgbmatrix"
+	"encoding/json"
 	"image"
 	"time"
 
@@ -26,7 +28,7 @@ type StockResponse struct {
 
 type Stock struct {
 	ctx     *gg.Context
-	sprite  *anim.Sprite
+	sprite  *rgbmatrix.Sprite
 	req     StockResponse
 	message string
 }
@@ -336,12 +338,20 @@ func (S *Scenario) ComposeMessage(interface{}) string {
 }
 
 func (S *Stock) DrawLine(param interface{}) {
+	var mess string = "Super test de la mort qui tue - "
 	S.ctx.SetHexColor("#FF0000")
-	S.ctx.DrawString(S.message, float64(S.sprite.Pos.X), float64(S.sprite.Pos.Y))
+	// for _, symbol := range S.req.Data.Result {
+	// 	mess = fmt.Sprintf("%s - %s : %f", mess, symbol.Symbol, symbol.RegularMarketPrice)
+	// }
+	S.sprite.Size.X = len(mess) * 5
+
+	// Final draw
+	S.ctx.DrawString(mess, float64(S.sprite.Pos.X), float64(S.sprite.Pos.Y))
+	S.ctx.DrawString(mess, float64(S.sprite.Pos.X+S.sprite.Size.X), float64(S.sprite.Pos.Y))
 }
 
 func (S *Scenario) Business() {
-	ticker := time.NewTicker(time.Minute * 10)
+	ticker := time.NewTicker(time.Second * time.Duration(S.conf.API.QuoteInterval))
 	defer func() {
 		ticker.Stop()
 	}()
@@ -353,21 +363,22 @@ func (S *Scenario) Business() {
 	stock.ctx = gg.NewContext(size.X, size.Y)
 	stock.ctx.SetFontFace(bitmapfont.Gothic10r)
 
-	stock.message = "Ceci est un super test de longueur de phrase"
-	stock.sprite = &anim.Sprite{
+	stock.sprite = &rgbmatrix.Sprite{
 		ScreenSize: size,
-		Size:       image.Point{len(stock.message) * 5, strHeight},
+		Size:       image.Point{0, strHeight},
 		Pos:        image.Point{5, strHeight},
-		Dir:        -1,
+		Style:      rgbmatrix.Restart,
+		DirX:       -1,
+		DirY:       1,
 	}
 	stock.sprite.Draw = stock.DrawLine
 
 	for {
 		select {
 		case <-ticker.C:
-			// body, _ := APICall(S.conf.API.QuoteURL, S.conf.API.QuoteKey, "GET", S.conf.API.QuoteSymbols)
-			// json.Unmarshal(body, &req)
-			// clog.Test("Scenario", "Business", "%v", req)
+			body, _ := APICall(S.conf.API.QuoteURL, S.conf.API.QuoteKey, "GET", S.conf.API.QuoteSymbols)
+			json.Unmarshal(body, &stock.req)
+			clog.Test("Scenario", "Business", "%v", stock.req)
 		default:
 			stock.ctx.SetHexColor("#000000")
 			stock.ctx.Clear()

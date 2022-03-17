@@ -29,15 +29,29 @@ type ToolKit struct {
 	Transform func(img image.Image) *image.NRGBA
 }
 
+type MoveStyle int
+
+const (
+	Idle MoveStyle = iota
+	ExternalBounce
+	InternalBounce
+	Continue
+	Restart
+)
+
 type Sprite struct {
 	ScreenSize image.Point
 	Size       image.Point
 	Pos        image.Point
-	Dir        int
+	DirX       int
+	DirY       int
+	Style      MoveStyle
 	Draw       func(interface{})
 	Text       string
 	BgColor    string
 	FgColor    string
+
+	startPos image.Point
 }
 
 // NewToolKit returns a new ToolKit wrapping the given Matrix
@@ -52,6 +66,7 @@ func (tk *ToolKit) NewSprite(width, height int, x, y int) *Sprite {
 		ScreenSize: tk.Canvas.Bounds().Max,
 		Size:       image.Point{width, height},
 		Pos:        image.Point{x, y},
+		startPos:   image.Point{x, y},
 	}
 }
 
@@ -216,15 +231,74 @@ func (tk *ToolKit) Close() error {
 	return tk.Canvas.Close()
 }
 
+func (S *Sprite) ExternalBounce() {
+	if S.Size.X > S.ScreenSize.X {
+		S.Pos.X += S.DirX
+		if S.Pos.X+S.Size.X < S.ScreenSize.X {
+			S.DirX = 1
+		}
+		if S.Pos.X == 0 {
+			S.DirX = -1
+		}
+	}
+	if S.Size.Y > S.ScreenSize.Y {
+		S.Pos.Y += S.DirY
+		if S.Pos.Y+S.Size.Y < S.ScreenSize.Y {
+			S.DirY = 1
+		}
+		if S.Pos.Y == 0 {
+			S.DirY = -1
+		}
+	}
+}
+
+func (S *Sprite) InternalBounce() {
+
+	S.Pos.X += S.DirX
+	if S.Pos.X+S.Size.X >= S.ScreenSize.X {
+		S.DirX = -1
+	}
+	if S.Pos.X <= 0 {
+		S.DirX = 1
+	}
+
+	S.Pos.Y += S.DirY
+	if S.Pos.Y+S.Size.Y >= S.ScreenSize.Y {
+		S.DirY = -1
+	}
+	if S.Pos.Y <= 0 {
+		S.DirY = 1
+	}
+}
+
+func (S *Sprite) Continue() {
+}
+
+func (S *Sprite) Restart() {
+	S.Pos.X += S.DirX
+	if S.Pos.X >= S.ScreenSize.X {
+		S.Pos.X = S.startPos.X
+	}
+	if S.Pos.X+S.Size.X <= 0 {
+		S.Pos.X = S.startPos.X
+	}
+}
+
 func (S *Sprite) Move() {
 	S.Draw(S)
-	if S.Size.X > S.ScreenSize.X {
-		S.Pos.X += S.Dir
-		if S.Pos.X+S.Size.X < S.ScreenSize.X {
-			S.Dir = 1
-		}
-		if S.Pos.X == 5 {
-			S.Dir = -1
-		}
+	if S.Style == Idle {
+		return
+	}
+	switch S.Style {
+	case Idle:
+		return
+	case ExternalBounce:
+		S.ExternalBounce()
+	case InternalBounce:
+		S.InternalBounce()
+	case Continue:
+		S.Continue()
+	case Restart:
+		S.Restart()
 	}
 }
