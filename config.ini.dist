@@ -42,3 +42,6 @@ QuoteKey                = "xxxx"
 QuoteSymbols            = "NEBL-EUR,ALGO-EUR,DOGE-EUR,VIV.PA"
 QuoteInterval           = 10
 
+[WeatherAPI]
+WeatherURL              = "http://api.meteo-concept.com/api/"
+WeatherKey              = "0e0acdd2450a8b1156162076f9daf412277c0233b74e4dcd0593ebf33a885674"
