@@ -3,9 +3,13 @@ package scenario
 import (
 	"GoLedMatrix/clog"
 	"GoLedMatrix/rgbmatrix"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"image"
+	"io/ioutil"
+	"net"
+	"net/http"
 	"time"
 
 	"github.com/fogleman/gg"
@@ -14,6 +18,8 @@ import (
 
 type StockSymbol struct {
 	Symbol              string  `mapstructure:"symbol" json:"symbol"`
+	QuoteType           string  `mapstructure:"quoteType" json:"quoteType"`
+	FromCurrency        string  `mapstructure:"fromCurrency" json:"fromCurrency"`
 	CoinImageUrl        string  `mapstructure:"coinImageUrl" json:"coinImageUrl"`
 	RegularMarketPrice  float64 `mapstructure:"regularMarketPrice" json:"regularMarketPrice"`
 	RegularMarketChange float64 `mapstructure:"regularMarketChange" json:"regularMarketChange"`
@@ -29,7 +35,7 @@ type StockResponse struct {
 
 type Stock struct {
 	ctx     *gg.Context
-	sprite  []*rgbmatrix.Sprite
+	sprite  *rgbmatrix.Sprite
 	req     StockResponse
 	message string
 	active  bool
@@ -292,70 +298,88 @@ var temp string = `{
 	}
   }`
 
-func APICall(url string, key string, method string, action string) ([]byte, error) {
+func FinancialAPICall(url string, key string, method string, action string) ([]byte, error) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		Dial: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+		}).Dial,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ResponseHeaderTimeout: 10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	}
+	client := &http.Client{Transport: tr}
 
-	// tr := &http.Transport{
-	// 	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	// 	Dial: (&net.Dialer{
-	// 		Timeout:   30 * time.Second,
-	// 		KeepAlive: 30 * time.Second,
-	// 	}).Dial,
-	// 	TLSHandshakeTimeout:   10 * time.Second,
-	// 	ResponseHeaderTimeout: 10 * time.Second,
-	// 	ExpectContinueTimeout: 1 * time.Second,
-	// }
-	// client := &http.Client{Transport: tr}
+	req, err := http.NewRequest(method, url+"/"+action, nil)
+	if err != nil {
+		clog.Error("APICall", method, "%s", err)
+		return nil, err
+	}
+	req.Header.Set("user-agent", "GoLedMatrix Agent")
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("X-Api-Key", key)
 
-	// req, err := http.NewRequest(method, url+"/"+action, nil)
-	// if err != nil {
-	// 	clog.Error("APICall", method, "%s", err)
-	// 	return nil, err
-	// }
-	// req.Header.Set("user-agent", "GoLedMatrix Agent")
-	// req.Header.Add("Content-Type", "application/json")
-	// req.Header.Add("X-Api-Key", key)
+	resp, err := client.Do(req)
+	if err != nil {
+		clog.Error("APICall", method, "%s", err)
+	}
 
-	// resp, err := client.Do(req)
-	// if err != nil {
-	// 	clog.Error("APICall", method, "%s", err)
-	// }
+	body, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
 
-	// body, err := ioutil.ReadAll(resp.Body)
-	// defer resp.Body.Close()
-
-	// if resp.StatusCode != 200 {
-	// 	clog.Warn("APICall", method, "HTTP Response Status: %d %s", resp.StatusCode, http.StatusText(resp.StatusCode))
-	// 	if err != nil {
-	// 		clog.Error("APICall", method, "%s", err)
-	// 	}
-	// 	clog.Warn("APICall", method, "%s", string(body))
-	// 	return nil, err
-	// }
-	// return body, nil
-	return []byte(temp), nil
+	if resp.StatusCode != 200 {
+		clog.Warn("APICall", method, "HTTP Response Status: %d %s", resp.StatusCode, http.StatusText(resp.StatusCode))
+		if err != nil {
+			clog.Error("APICall", method, "%s", err)
+		}
+		clog.Warn("APICall", method, "%s", string(body))
+		return nil, err
+	}
+	return body, nil
+	// return []byte(temp), nil
 }
 
 func (S *Scenario) ComposeMessage(interface{}) string {
 	return ""
 }
 
-func (S *Stock) DrawLine(param interface{}) {
+func (S *Stock) drawLine(startX int) int {
 	var mess string
-	var startPos int = 0
+	var lineLength int = 0
 
-	S.ctx.SetHexColor("#FF0000")
-	for index, symbol := range S.req.Data.Result {
-		S.sprite[index].Pos.X = startPos
-		mess = fmt.Sprintf("%s - %s : %f", mess, symbol.Symbol, symbol.RegularMarketPrice)
-		S.sprite[index].Size.X = len(mess) * 5
-		startPos = S.sprite[index].Size.X
-		S.ctx.DrawString(mess, float64(S.sprite[index].Pos.X), float64(S.sprite[index].Pos.Y))
-		// S.ctx.DrawString(mess, float64(S.sprite[index].Pos.X+S.sprite[index].Size.X), float64(S.sprite[index].Pos.Y))
+	for _, symbol := range S.req.Data.Result {
+		S.ctx.SetHexColor("#FFFFFF")
+		if symbol.QuoteType == "CRYPTOCURRENCY" {
+			mess = fmt.Sprintf("%s:", symbol.FromCurrency)
+		} else {
+			mess = fmt.Sprintf("%s:", symbol.Symbol)
+		}
+		S.ctx.DrawString(mess, float64(startX+lineLength), float64(S.sprite.Pos.Y))
+		lineLength += len(mess) * 5
+
+		if symbol.RegularMarketChange < 0 {
+			S.ctx.SetHexColor("#FF0000")
+		} else {
+			S.ctx.SetHexColor("#00FF00")
+		}
+		mess = fmt.Sprintf("%.3f ", symbol.RegularMarketPrice)
+		S.ctx.DrawString(mess, float64(startX+lineLength), float64(S.sprite.Pos.Y))
+		lineLength += len(mess) * 5
+	}
+	return lineLength
+}
+
+func (S *Stock) DisplaySprite(param interface{}) {
+	// var this *rgbmatrix.Sprite = param.(*rgbmatrix.Sprite)
+	S.sprite.Size.X = S.drawLine(S.sprite.Pos.X)
+	if S.sprite.Pos.X+S.sprite.Size.X < S.sprite.ScreenSize.X {
+		S.drawLine(S.sprite.Pos.X + S.sprite.Size.X)
 	}
 }
 
 func (S *Scenario) Business() {
-	ticker := time.NewTicker(time.Second * time.Duration(S.conf.API.QuoteInterval))
+	ticker := time.NewTicker(time.Minute * time.Duration(S.conf.API.QuoteInterval))
 	defer func() {
 		ticker.Stop()
 	}()
@@ -366,36 +390,31 @@ func (S *Scenario) Business() {
 	strHeight := 8
 	stock.ctx = gg.NewContext(size.X, size.Y)
 	stock.ctx.SetFontFace(bitmapfont.Gothic10r)
-	stock.active = false
+
+	stock.sprite = &rgbmatrix.Sprite{
+		ID:         1,
+		ScreenSize: size,
+		Size:       image.Point{0, strHeight},
+		Pos:        image.Point{5, strHeight},
+		Style:      rgbmatrix.Restart,
+		DirX:       -1,
+		DirY:       1,
+		Draw:       stock.DisplaySprite,
+	}
+
+	body, _ := FinancialAPICall(S.conf.API.QuoteURL, S.conf.API.QuoteKey, "GET", S.conf.API.QuoteSymbols)
+	json.Unmarshal(body, &stock.req)
 
 	for {
 		select {
 		case <-ticker.C:
-			body, _ := APICall(S.conf.API.QuoteURL, S.conf.API.QuoteKey, "GET", S.conf.API.QuoteSymbols)
+			body, _ := FinancialAPICall(S.conf.API.QuoteURL, S.conf.API.QuoteKey, "GET", S.conf.API.QuoteSymbols)
 			json.Unmarshal(body, &stock.req)
-			clog.Test("Scenario", "Business", "%v", stock.req)
-			stock.sprite = make([]*rgbmatrix.Sprite, len(stock.req.Data.Result))
-			for index, _ := range stock.req.Data.Result {
-				stock.sprite[index] = &rgbmatrix.Sprite{
-					ScreenSize: size,
-					Size:       image.Point{0, strHeight},
-					Pos:        image.Point{5, strHeight},
-					Style:      rgbmatrix.Restart,
-					DirX:       -1,
-					DirY:       1,
-				}
-				stock.sprite[index].Draw = stock.DrawLine
-			}
-			stock.active = true
 		default:
-			if stock.active {
-				stock.ctx.SetHexColor("#000000")
-				stock.ctx.Clear()
-				for index, _ := range stock.req.Data.Result {
-					stock.sprite[index].Move()
-				}
-				S.tk.PlayImage(stock.ctx.Image(), time.Millisecond*50)
-			}
+			stock.ctx.SetHexColor("#000000")
+			stock.ctx.Clear()
+			stock.sprite.Move()
+			S.tk.PlayImage(stock.ctx.Image(), time.Millisecond*50)
 		}
 	}
 }

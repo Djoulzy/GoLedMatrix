@@ -6,9 +6,14 @@ import (
 	"GoLedMatrix/rgbmatrix"
 	"GoLedMatrix/scenario"
 	"GoLedMatrix/server"
+	"fmt"
 	"net"
+	"runtime"
 )
 
+var version = "No Version Provided"
+var build = "No build Provided"
+var goVersion = runtime.Version()
 var config = &confload.ConfigData{}
 
 func getIP() string {
@@ -55,6 +60,7 @@ func main() {
 		http.StartHTTP(config, &scen)
 	}
 
-	go scen.Run(m, config)
+	BuildVersion := fmt.Sprintf("%s (%s)", version, goVersion)
+	go scen.Run(m, config, BuildVersion)
 	m.Start()
 }

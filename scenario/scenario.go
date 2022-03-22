@@ -54,7 +54,7 @@ func (S *Scenario) Control(params *ControlParams) {
 	S.quit <- true
 }
 
-func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
+func (S *Scenario) Run(m interface{}, config *confload.ConfigData, version string) {
 	switch m.(type) {
 	case emulator.Emulator:
 		duration := time.Second * 1
@@ -72,7 +72,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData) {
 
 	S.quit = make(chan bool, 0)
 
-	S.Startup()
+	S.Startup(version)
 
 	for {
 		switch S.mode {

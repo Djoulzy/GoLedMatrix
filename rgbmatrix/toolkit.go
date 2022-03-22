@@ -40,6 +40,7 @@ const (
 )
 
 type Sprite struct {
+	ID         int
 	ScreenSize image.Point
 	Size       image.Point
 	Pos        image.Point

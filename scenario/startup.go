@@ -10,6 +10,14 @@ import (
 	"github.com/hajimehoshi/bitmapfont"
 )
 
+type StartupParams struct {
+	FGColor1 string `json:"fgcolor1"`
+	BGColor  string `json:"bgcolor"`
+	Message  string `json:"message"`
+	FontFace string `json:"fontface"`
+	FontSize int    `json:"fontsize"`
+}
+
 type Startup struct {
 	ctx    *gg.Context
 	sprite []*rgbmatrix.Sprite
@@ -22,7 +30,7 @@ func (S *Startup) DrawLine(param interface{}) {
 	S.ctx.DrawString(sprite.Text, float64(sprite.Pos.X), float64(sprite.Pos.Y))
 }
 
-func (S *Scenario) Startup() {
+func (S *Scenario) Startup(version string) {
 	ticker := time.NewTicker(time.Second * time.Duration(S.conf.DefaultConf.StartUpDelay))
 	defer func() {
 		ticker.Stop()
@@ -49,9 +57,9 @@ func (S *Scenario) Startup() {
 
 	startup.sprite[1] = &rgbmatrix.Sprite{
 		ScreenSize: size,
-		Size:       image.Point{len("v0.99 Build 2021-12-30") * 5, strHeight},
+		Size:       image.Point{len(version) * 5, strHeight},
 		Pos:        image.Point{5, strHeight * 2},
-		Text:       "v0.99 Build 2021-12-30",
+		Text:       version,
 		FgColor:    "#f29d0c",
 		DirX:       -1,
 		Draw:       startup.DrawLine,
