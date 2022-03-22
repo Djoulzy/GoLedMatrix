@@ -4,6 +4,7 @@ import (
 	"GoLedMatrix/clog"
 	"GoLedMatrix/rgbmatrix"
 	"encoding/json"
+	"fmt"
 	"image"
 	"time"
 
@@ -28,9 +29,10 @@ type StockResponse struct {
 
 type Stock struct {
 	ctx     *gg.Context
-	sprite  *rgbmatrix.Sprite
+	sprite  []*rgbmatrix.Sprite
 	req     StockResponse
 	message string
+	active  bool
 }
 
 var temp string = `{
@@ -338,16 +340,18 @@ func (S *Scenario) ComposeMessage(interface{}) string {
 }
 
 func (S *Stock) DrawLine(param interface{}) {
-	var mess string = "Super test de la mort qui tue - "
-	S.ctx.SetHexColor("#FF0000")
-	// for _, symbol := range S.req.Data.Result {
-	// 	mess = fmt.Sprintf("%s - %s : %f", mess, symbol.Symbol, symbol.RegularMarketPrice)
-	// }
-	S.sprite.Size.X = len(mess) * 5
+	var mess string
+	var startPos int = 0
 
-	// Final draw
-	S.ctx.DrawString(mess, float64(S.sprite.Pos.X), float64(S.sprite.Pos.Y))
-	S.ctx.DrawString(mess, float64(S.sprite.Pos.X+S.sprite.Size.X), float64(S.sprite.Pos.Y))
+	S.ctx.SetHexColor("#FF0000")
+	for index, symbol := range S.req.Data.Result {
+		S.sprite[index].Pos.X = startPos
+		mess = fmt.Sprintf("%s - %s : %f", mess, symbol.Symbol, symbol.RegularMarketPrice)
+		S.sprite[index].Size.X = len(mess) * 5
+		startPos = S.sprite[index].Size.X
+		S.ctx.DrawString(mess, float64(S.sprite[index].Pos.X), float64(S.sprite[index].Pos.Y))
+		// S.ctx.DrawString(mess, float64(S.sprite[index].Pos.X+S.sprite[index].Size.X), float64(S.sprite[index].Pos.Y))
+	}
 }
 
 func (S *Scenario) Business() {
@@ -362,16 +366,7 @@ func (S *Scenario) Business() {
 	strHeight := 8
 	stock.ctx = gg.NewContext(size.X, size.Y)
 	stock.ctx.SetFontFace(bitmapfont.Gothic10r)
-
-	stock.sprite = &rgbmatrix.Sprite{
-		ScreenSize: size,
-		Size:       image.Point{0, strHeight},
-		Pos:        image.Point{5, strHeight},
-		Style:      rgbmatrix.Restart,
-		DirX:       -1,
-		DirY:       1,
-	}
-	stock.sprite.Draw = stock.DrawLine
+	stock.active = false
 
 	for {
 		select {
@@ -379,11 +374,28 @@ func (S *Scenario) Business() {
 			body, _ := APICall(S.conf.API.QuoteURL, S.conf.API.QuoteKey, "GET", S.conf.API.QuoteSymbols)
 			json.Unmarshal(body, &stock.req)
 			clog.Test("Scenario", "Business", "%v", stock.req)
+			stock.sprite = make([]*rgbmatrix.Sprite, len(stock.req.Data.Result))
+			for index, _ := range stock.req.Data.Result {
+				stock.sprite[index] = &rgbmatrix.Sprite{
+					ScreenSize: size,
+					Size:       image.Point{0, strHeight},
+					Pos:        image.Point{5, strHeight},
+					Style:      rgbmatrix.Restart,
+					DirX:       -1,
+					DirY:       1,
+				}
+				stock.sprite[index].Draw = stock.DrawLine
+			}
+			stock.active = true
 		default:
-			stock.ctx.SetHexColor("#000000")
-			stock.ctx.Clear()
-			stock.sprite.Move()
-			S.tk.PlayImage(stock.ctx.Image(), time.Millisecond*50)
+			if stock.active {
+				stock.ctx.SetHexColor("#000000")
+				stock.ctx.Clear()
+				for index, _ := range stock.req.Data.Result {
+					stock.sprite[index].Move()
+				}
+				S.tk.PlayImage(stock.ctx.Image(), time.Millisecond*50)
+			}
 		}
 	}
 }
