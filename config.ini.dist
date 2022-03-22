@@ -34,6 +34,7 @@ InstallDir              = "/home/dietpi/go/src/GoLedMatrix/"
 MediaDir                = "/home/dietpi/go/src/GoLedMatrix/media/"
 TmpDir                  = "/home/dietpi/go/src/GoLedMatrix/media/tmp/"
 FontDir                 = "/home/dietpi/go/src/GoLedMatrix/media/ttf/"
+Mode                    = 6
 
 [API]
 QuoteURL                = "https://yfapi.net/v6/finance/quote?region=FR&lang=fr&symbols="
