@@ -3,6 +3,7 @@ package scenario
 import (
 	"GoLedMatrix/clog"
 	"crypto/tls"
+	"fmt"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -35,6 +36,7 @@ func APICall(url string, key ApiToken, method string, action string) ([]byte, er
 	}
 	client := &http.Client{Transport: tr}
 
+	clog.Test("APICall", method, "%s/%s", url, action)
 	req, err := http.NewRequest(method, url+"/"+action, nil)
 	if err != nil {
 		clog.Error("APICall", method, "%s", err)
@@ -46,8 +48,10 @@ func APICall(url string, key ApiToken, method string, action string) ([]byte, er
 	case XAPIKEY:
 		req.Header.Add("X-Api-Key", key.Value)
 	case BEARER:
-		req.Header.Add("Authorization", "Bearer "+key.Value)
+		bearer := fmt.Sprintf("Bearer %s", key.Value)
+		req.Header.Add("Authorization", bearer)
 	}
+	clog.Test("APICall", "Header", "%v", req.Header)
 
 	resp, err := client.Do(req)
 	if err != nil {

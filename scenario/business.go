@@ -1,8 +1,8 @@
 package scenario
 
 import (
+	"GoLedMatrix/clog"
 	"GoLedMatrix/rgbmatrix"
-	"encoding/json"
 	"fmt"
 	"image"
 	"time"
@@ -71,6 +71,7 @@ func (S *Stock) DisplaySprite(param interface{}) {
 }
 
 func (S *Scenario) Business() {
+	clog.Test("Scenario", "Business", "%d", S.conf.QuoteAPI.QuoteInterval)
 	ticker := time.NewTicker(time.Minute * time.Duration(S.conf.QuoteAPI.QuoteInterval))
 	defer func() {
 		ticker.Stop()
@@ -107,14 +108,16 @@ func (S *Scenario) Business() {
 		Auth:  BEARER,
 	}
 
-	body, _ := APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.QuoteAPI.QuoteSymbols)
-	json.Unmarshal(body, &stock.req)
+	body, _ := APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
+	// json.Unmarshal(body, &stock.req)
+	clog.Test("Scenario", "Business", "%s", body)
 
 	for {
 		select {
 		case <-ticker.C:
-			// body, _ := APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
+			// body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
 			// json.Unmarshal(body, &stock.req)
+			body, _ = APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
 		default:
 			stock.ctx.SetHexColor("#000000")
 			stock.ctx.Clear()

@@ -25,8 +25,10 @@ type QuoteAPI struct {
 }
 
 type WeatherAPI struct {
-	WeatherURL string
-	WeatherKey string
+	WeatherURL   string
+	WeatherKey   string
+	WeatherRoute string
+	WeatherINSEE string
 }
 
 type ConfigData struct {
