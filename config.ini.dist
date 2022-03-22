@@ -36,8 +36,9 @@ TmpDir                  = "/home/dietpi/go/src/GoLedMatrix/media/tmp/"
 FontDir                 = "/home/dietpi/go/src/GoLedMatrix/media/ttf/"
 Mode                    = 6
 
-[API]
+[QuoteAPI]
 QuoteURL                = "https://yfapi.net/v6/finance/quote?region=FR&lang=fr&symbols="
-QuoteKey                = "o8Jx9ekjip3mmh6EqXs7p4oAyThQEanT2KmgOzH5"
+QuoteKey                = "xxxx"
 QuoteSymbols            = "NEBL-EUR,ALGO-EUR,DOGE-EUR,VIV.PA"
 QuoteInterval           = 10
+

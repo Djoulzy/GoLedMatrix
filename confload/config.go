@@ -17,11 +17,16 @@ type DefaultConf struct {
 	Mode         int
 }
 
-type API struct {
+type QuoteAPI struct {
 	QuoteURL      string
 	QuoteKey      string
 	QuoteSymbols  string
 	QuoteInterval int
+}
+
+type WeatherAPI struct {
+	WeatherURL string
+	WeatherKey string
 }
 
 type ConfigData struct {
@@ -29,5 +34,6 @@ type ConfigData struct {
 	rgbmatrix.RuntimeOptions
 	HTTPserver
 	DefaultConf
-	API
+	QuoteAPI
+	WeatherAPI
 }
