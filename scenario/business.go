@@ -3,6 +3,7 @@ package scenario
 import (
 	"GoLedMatrix/clog"
 	"GoLedMatrix/rgbmatrix"
+	"encoding/json"
 	"fmt"
 	"image"
 	"time"
@@ -34,6 +35,32 @@ type Stock struct {
 	req     StockResponse
 	message string
 	active  bool
+}
+
+type WeatherForecast struct {
+	Day       int    `mapstructure:"day" json:"day"`
+	Date      string `mapstructure:"datetime" json:"datetime"`
+	ProbaRain int    `mapstructure:"probarain" json:"probarain"`
+	TMin      int    `mapstructure:"tmin" json:"tmin"`
+	TMax      int    `mapstructure:"tmax" json:"tmax"`
+}
+
+type WeatherCity struct {
+	INSEE string `mapstructure:"insee" json:"insee"`
+	CP    int    `mapstructure:"cp" json:"cp"`
+	Name  string `mapstructure:"name" json:"name"`
+}
+
+type WeatherResponse struct {
+	City     WeatherCity
+	Update   string
+	Forecast []WeatherForecast
+}
+
+type Weather struct {
+	ctx    *gg.Context
+	sprite *rgbmatrix.Sprite
+	req    WeatherResponse
 }
 
 func (S *Stock) drawLine(startX int) int {
@@ -71,13 +98,13 @@ func (S *Stock) DisplaySprite(param interface{}) {
 }
 
 func (S *Scenario) Business() {
-	clog.Test("Scenario", "Business", "%d", S.conf.QuoteAPI.QuoteInterval)
-	ticker := time.NewTicker(time.Minute * time.Duration(S.conf.QuoteAPI.QuoteInterval))
+	tickerQuote := time.NewTicker(time.Minute * time.Duration(S.conf.QuoteAPI.QuoteInterval))
 	defer func() {
-		ticker.Stop()
+		tickerQuote.Stop()
 	}()
 
 	stock := Stock{}
+	weather := Weather{}
 
 	size := S.tk.Canvas.Bounds().Max
 	strHeight := 8
@@ -105,19 +132,18 @@ func (S *Scenario) Business() {
 
 	WeatherKey := ApiToken{
 		Value: S.conf.WeatherAPI.WeatherKey,
-		Auth:  BEARER,
+		Auth:  PARAM,
 	}
 
 	body, _ := APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
-	// json.Unmarshal(body, &stock.req)
-	clog.Test("Scenario", "Business", "%s", body)
+	json.Unmarshal(body, &weather.req)
+	clog.Test("Scenario", "Business", "%v", weather.req)
 
 	for {
 		select {
-		case <-ticker.C:
+		case <-tickerQuote.C:
 			// body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
 			// json.Unmarshal(body, &stock.req)
-			body, _ = APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
 		default:
 			stock.ctx.SetHexColor("#000000")
 			stock.ctx.Clear()

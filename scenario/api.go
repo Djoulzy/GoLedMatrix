@@ -36,6 +36,10 @@ func APICall(url string, key ApiToken, method string, action string) ([]byte, er
 	}
 	client := &http.Client{Transport: tr}
 
+	if key.Auth == PARAM {
+		action += "&token=" + key.Value
+	}
+
 	clog.Test("APICall", method, "%s/%s", url, action)
 	req, err := http.NewRequest(method, url+"/"+action, nil)
 	if err != nil {
