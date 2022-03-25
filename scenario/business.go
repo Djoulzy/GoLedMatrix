@@ -63,8 +63,14 @@ type Weather struct {
 	req    WeatherResponse
 }
 
+type Clock struct {
+	ctx    *gg.Context
+	sprite *rgbmatrix.Sprite
+}
+
 var WeatherDateFormat string = "2006-01-02T15:04:05-0700"
 var jourDeLaSemaine [7]string = [7]string{"Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"}
+var jourDeLaSemaineL [7]string = [7]string{"Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"}
 
 var temp_meteo string = `{
     "city": {
@@ -396,7 +402,7 @@ func (W *Weather) DisplaySprite(param interface{}) {
 
 	// var this *rgbmatrix.Sprite = param.(*rgbmatrix.Sprite)
 	W.ctx.SetHexColor("#0000FF")
-	W.ctx.DrawRectangle(float64(W.sprite.Pos.X), float64(W.sprite.Pos.Y), 64, 64)
+	W.ctx.DrawRectangle(float64(W.sprite.Pos.X), float64(W.sprite.Pos.Y), float64(W.sprite.Size.X), float64(W.sprite.Size.Y))
 	W.ctx.Stroke()
 
 	W.ctx.SetHexColor("#FFFFFF")
@@ -420,21 +426,44 @@ func (W *Weather) DisplaySprite(param interface{}) {
 	}
 }
 
+func (C *Clock) DisplaySprite(param interface{}) {
+	C.ctx.SetHexColor("#FF0000")
+	C.ctx.DrawRectangle(float64(C.sprite.Pos.X), float64(C.sprite.Pos.Y), float64(C.sprite.Size.X), float64(C.sprite.Size.Y))
+	C.ctx.Stroke()
+
+	actual := time.Now()
+	heure := actual.Format("15:04:05")
+	day := int(time.Now().Weekday())
+	C.ctx.DrawString(heure, float64(C.sprite.Pos.X+2), float64(C.sprite.Pos.Y+14))
+	C.ctx.DrawString(jourDeLaSemaineL[day], float64(C.sprite.Pos.X+2), float64(C.sprite.Pos.Y+30))
+}
+
 func (S *Scenario) Business() {
+	var body []byte
+
 	tickerQuote := time.NewTicker(time.Minute * time.Duration(S.conf.QuoteAPI.QuoteInterval))
 	defer func() {
 		tickerQuote.Stop()
 	}()
+	tickerWeather := time.NewTicker(time.Minute * time.Duration(S.conf.WeatherAPI.WeatherInterval))
+	defer func() {
+		tickerQuote.Stop()
+	}()
+
+	Actions := true
+	Meteo := true
 
 	stock := Stock{}
 	weather := Weather{}
+	clock := Clock{}
+
 	ctx := gg.NewContext(128, 128)
-	ctx.SetFontFace(bitmapfont.Gothic10r)
 
 	size := S.tk.Canvas.Bounds().Max
 	strHeight := 8
 	stock.ctx = ctx
 	weather.ctx = ctx
+	clock.ctx = ctx
 
 	stock.sprite = &rgbmatrix.Sprite{
 		ID:         1,
@@ -458,35 +487,59 @@ func (S *Scenario) Business() {
 		Draw:       weather.DisplaySprite,
 	}
 
+	clock.sprite = &rgbmatrix.Sprite{
+		ID:         2,
+		ScreenSize: size,
+		Size:       image.Point{64, 64},
+		Pos:        image.Point{64, 32},
+		Style:      rgbmatrix.Idle,
+		DirX:       1,
+		DirY:       1,
+		Draw:       clock.DisplaySprite,
+	}
+
 	Quotekey := ApiToken{
 		Value: S.conf.QuoteAPI.QuoteKey,
 		Auth:  XAPIKEY,
 	}
-
-	body, _ := APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
-	json.Unmarshal(body, &stock.req)
+	if Actions {
+		body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
+		json.Unmarshal(body, &stock.req)
+	}
 
 	WeatherKey := ApiToken{
 		Value: S.conf.WeatherAPI.WeatherKey,
 		Auth:  PARAM,
 	}
-
-	body, _ = APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
-	json.Unmarshal(body, &weather.req)
-
-	// json.Unmarshal([]byte(temp_meteo), &weather.req)
-	// clog.Test("Scenario", "Business", "%v", weather.req)
+	if Meteo {
+		body, _ = APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
+		json.Unmarshal(body, &weather.req)
+	}
 
 	for {
 		select {
 		case <-tickerQuote.C:
-			body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
-			json.Unmarshal(body, &stock.req)
+			if Actions {
+				body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
+				json.Unmarshal(body, &stock.req)
+			}
+		case <-tickerWeather.C:
+			if Meteo {
+				body, _ = APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
+				json.Unmarshal(body, &weather.req)
+			}
 		default:
-			stock.ctx.SetHexColor("#000000")
-			stock.ctx.Clear()
-			stock.sprite.Move()
-			weather.sprite.Move()
+			ctx.SetHexColor("#000000")
+			ctx.Clear()
+			ctx.SetFontFace(bitmapfont.Gothic10r)
+			if Actions {
+				stock.sprite.Move()
+			}
+			if Meteo {
+				weather.sprite.Move()
+			}
+			ctx.LoadFontFace(S.conf.DefaultConf.FontDir+"fixed/Pixel_NES.otf", 12)
+			clock.sprite.Move()
 			S.tk.PlayImage(stock.ctx.Image(), time.Millisecond*50)
 		}
 	}

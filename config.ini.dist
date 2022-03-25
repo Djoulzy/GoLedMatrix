@@ -47,3 +47,4 @@ WeatherURL              = "http://api.meteo-concept.com/api/"
 WeatherKey              = "xxx"
 WeatherRoute            = "forecast/daily"
 WeatherINSEE            = "13002"
+WeatherInterval         = 10
