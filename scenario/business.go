@@ -63,6 +63,287 @@ type Weather struct {
 	req    WeatherResponse
 }
 
+var WeatherDateFormat string = "2006-01-02T15:04:05-0700"
+var jourDeLaSemaine [7]string = [7]string{"Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"}
+
+var temp_meteo string = `{
+    "city": {
+        "insee": "35238",
+        "cp": 35000,
+        "name": "Rennes",
+        "latitude": 48.112,
+        "longitude": -1.6819,
+        "altitude": 38
+    },
+    "update": "2020-10-29T12:40:08+0100",
+    "forecast": [
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 3,
+            "datetime": "2020-11-01T01:00:00+0100",
+            "wind10m": 30,
+            "gust10m": 41,
+            "dirwind10m": 210,
+            "rr10": 15.5,
+            "rr1": 21,
+            "probarain": 90,
+            "weather": 11,
+            "tmin": 15,
+            "tmax": 18,
+            "sun_hours": 0,
+            "etp": 1,
+            "probafrost": 0,
+            "probafog": 0,
+            "probawind70": 20,
+            "probawind100": 0,
+            "gustx": 61
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 4,
+            "datetime": "2020-11-02T01:00:00+0100",
+            "wind10m": 30,
+            "gust10m": 56,
+            "dirwind10m": 207,
+            "rr10": 10.2,
+            "rr1": 27,
+            "probarain": 80,
+            "weather": 211,
+            "tmin": 9,
+            "tmax": 18,
+            "sun_hours": 0,
+            "etp": 1,
+            "probafrost": 0,
+            "probafog": 0,
+            "probawind70": 30,
+            "probawind100": 0,
+            "gustx": 86
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 5,
+            "datetime": "2020-11-03T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 30,
+            "dirwind10m": 216,
+            "rr10": 2.8,
+            "rr1": 12.2,
+            "probarain": 60,
+            "weather": 41,
+            "tmin": 6,
+            "tmax": 14,
+            "sun_hours": 6,
+            "etp": 1,
+            "probafrost": 10,
+            "probafog": 0,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 45
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 6,
+            "datetime": "2020-11-04T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 26,
+            "dirwind10m": 49,
+            "rr10": 0.4,
+            "rr1": 2.2,
+            "probarain": 60,
+            "weather": 40,
+            "tmin": 5,
+            "tmax": 13,
+            "sun_hours": 6,
+            "etp": 1,
+            "probafrost": 10,
+            "probafog": 10,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 36
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 7,
+            "datetime": "2020-11-05T01:00:00+0100",
+            "wind10m": 20,
+            "gust10m": 32,
+            "dirwind10m": 71,
+            "rr10": 0,
+            "rr1": 0,
+            "probarain": 20,
+            "weather": 3,
+            "tmin": 5,
+            "tmax": 14,
+            "sun_hours": 5,
+            "etp": 1,
+            "probafrost": 10,
+            "probafog": 0,
+            "probawind70": 10,
+            "probawind100": 0,
+            "gustx": 32
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 8,
+            "datetime": "2020-11-06T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 30,
+            "dirwind10m": 88,
+            "rr10": 0,
+            "rr1": 0,
+            "probarain": 40,
+            "weather": 3,
+            "tmin": 7,
+            "tmax": 17,
+            "sun_hours": 5,
+            "etp": 1,
+            "probafrost": 10,
+            "probafog": 0,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 30
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 9,
+            "datetime": "2020-11-07T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 27,
+            "dirwind10m": 92,
+            "rr10": 2.4,
+            "rr1": 5.2,
+            "probarain": 60,
+            "weather": 41,
+            "tmin": 8,
+            "tmax": 17,
+            "sun_hours": 4,
+            "etp": 1,
+            "probafrost": 0,
+            "probafog": 0,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 38
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 10,
+            "datetime": "2020-11-08T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 24,
+            "dirwind10m": 110,
+            "rr10": 6.4,
+            "rr1": 8.4,
+            "probarain": 60,
+            "weather": 40,
+            "tmin": 8,
+            "tmax": 16,
+            "sun_hours": 3,
+            "etp": 1,
+            "probafrost": 0,
+            "probafog": 0,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 35
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 11,
+            "datetime": "2020-11-09T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 22,
+            "dirwind10m": 140,
+            "rr10": 1.6,
+            "rr1": 7,
+            "probarain": 60,
+            "weather": 41,
+            "tmin": 7,
+            "tmax": 15,
+            "sun_hours": 3,
+            "etp": 1,
+            "probafrost": 0,
+            "probafog": 0,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 37
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 12,
+            "datetime": "2020-11-10T01:00:00+0100",
+            "wind10m": 10,
+            "gust10m": 21,
+            "dirwind10m": 153,
+            "rr10": 2.2,
+            "rr1": 6.5,
+            "probarain": 60,
+            "weather": 41,
+            "tmin": 6,
+            "tmax": 15,
+            "sun_hours": 4,
+            "etp": 1,
+            "probafrost": 10,
+            "probafog": 30,
+            "probawind70": 0,
+            "probawind100": 0,
+            "gustx": 31
+        },
+        {
+            "insee": "35238",
+            "cp": 35000,
+            "latitude": 48.112,
+            "longitude": -1.6819,
+            "day": 13,
+            "datetime": "2020-11-11T01:00:00+0100",
+            "wind10m": 15,
+            "gust10m": 21,
+            "dirwind10m": 201,
+            "rr10": 3.5,
+            "rr1": 10,
+            "probarain": 60,
+            "weather": 41,
+            "tmin": 6,
+            "tmax": 15,
+            "sun_hours": 4,
+            "etp": 1,
+            "probafrost": 10,
+            "probafog": 0,
+            "probawind70": 10,
+            "probawind100": 0,
+            "gustx": 31
+        }
+    ]
+}`
+
 func (S *Stock) drawLine(startX int) int {
 	var mess string
 	var lineLength int = 0
@@ -97,6 +378,48 @@ func (S *Stock) DisplaySprite(param interface{}) {
 	}
 }
 
+func (W *Weather) drawWidget(day WeatherForecast, x, y float64) {
+	t, err := time.Parse(WeatherDateFormat, day.Date)
+	if err != nil {
+		clog.Error("Business", "drawWidget", "%s", err)
+	}
+
+	W.ctx.SetHexColor("#FFFFFF")
+	W.ctx.DrawString(fmt.Sprintf("%s.%02d", jourDeLaSemaine[t.Weekday()], t.Day()), x, y)
+	W.ctx.DrawString(fmt.Sprintf(" %d°C", day.TMax), x, y+8)
+	W.ctx.DrawString(fmt.Sprintf(" %d°C", day.TMin), x, y+16)
+}
+
+func (W *Weather) DisplaySprite(param interface{}) {
+	XstartLine1 := 4
+	XstartLine2 := 38
+
+	// var this *rgbmatrix.Sprite = param.(*rgbmatrix.Sprite)
+	W.ctx.SetHexColor("#0000FF")
+	W.ctx.DrawRectangle(float64(W.sprite.Pos.X), float64(W.sprite.Pos.Y), 64, 64)
+	W.ctx.Stroke()
+
+	W.ctx.SetHexColor("#FFFFFF")
+	day := int(time.Now().Weekday())
+	toWe := 6 - day
+	// clog.Trace("Business", "drawWidget", "Day:%d - ToWE:%d", day, toWe)
+
+	W.drawWidget(W.req.Forecast[0], float64(W.sprite.Pos.X+XstartLine1), float64(W.sprite.Pos.Y+8))
+	W.drawWidget(W.req.Forecast[1], float64(W.sprite.Pos.X+XstartLine2), float64(W.sprite.Pos.Y+8))
+
+	switch day {
+	case 5:
+		W.drawWidget(W.req.Forecast[toWe+1], float64(W.sprite.Pos.X+XstartLine1), float64(W.sprite.Pos.Y+40))
+		W.drawWidget(W.req.Forecast[toWe+7], float64(W.sprite.Pos.X+XstartLine2), float64(W.sprite.Pos.Y+40))
+	case 6:
+		W.drawWidget(W.req.Forecast[toWe+7], float64(W.sprite.Pos.X+XstartLine1), float64(W.sprite.Pos.Y+40))
+		W.drawWidget(W.req.Forecast[toWe+8], float64(W.sprite.Pos.X+XstartLine2), float64(W.sprite.Pos.Y+40))
+	default:
+		W.drawWidget(W.req.Forecast[toWe], float64(W.sprite.Pos.X+XstartLine1), float64(W.sprite.Pos.Y+40))
+		W.drawWidget(W.req.Forecast[toWe+1], float64(W.sprite.Pos.X+XstartLine2), float64(W.sprite.Pos.Y+40))
+	}
+}
+
 func (S *Scenario) Business() {
 	tickerQuote := time.NewTicker(time.Minute * time.Duration(S.conf.QuoteAPI.QuoteInterval))
 	defer func() {
@@ -105,11 +428,13 @@ func (S *Scenario) Business() {
 
 	stock := Stock{}
 	weather := Weather{}
+	ctx := gg.NewContext(128, 128)
+	ctx.SetFontFace(bitmapfont.Gothic10r)
 
 	size := S.tk.Canvas.Bounds().Max
 	strHeight := 8
-	stock.ctx = gg.NewContext(size.X, size.Y)
-	stock.ctx.SetFontFace(bitmapfont.Gothic10r)
+	stock.ctx = ctx
+	weather.ctx = ctx
 
 	stock.sprite = &rgbmatrix.Sprite{
 		ID:         1,
@@ -122,32 +447,46 @@ func (S *Scenario) Business() {
 		Draw:       stock.DisplaySprite,
 	}
 
-	// Quotekey := ApiToken{
-	// 	Value: S.conf.QuoteAPI.QuoteKey,
-	// 	Auth:  XAPIKEY,
-	// }
+	weather.sprite = &rgbmatrix.Sprite{
+		ID:         2,
+		ScreenSize: size,
+		Size:       image.Point{64, 64},
+		Pos:        image.Point{0, 32},
+		Style:      rgbmatrix.Idle,
+		DirX:       1,
+		DirY:       1,
+		Draw:       weather.DisplaySprite,
+	}
 
-	// body, _ := APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
-	// json.Unmarshal(body, &stock.req)
+	Quotekey := ApiToken{
+		Value: S.conf.QuoteAPI.QuoteKey,
+		Auth:  XAPIKEY,
+	}
+
+	body, _ := APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
+	json.Unmarshal(body, &stock.req)
 
 	WeatherKey := ApiToken{
 		Value: S.conf.WeatherAPI.WeatherKey,
 		Auth:  PARAM,
 	}
 
-	body, _ := APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
+	body, _ = APICall(S.conf.WeatherAPI.WeatherURL, WeatherKey, "GET", S.conf.WeatherAPI.WeatherRoute+"?insee="+S.conf.WeatherAPI.WeatherINSEE)
 	json.Unmarshal(body, &weather.req)
-	clog.Test("Scenario", "Business", "%v", weather.req)
+
+	// json.Unmarshal([]byte(temp_meteo), &weather.req)
+	// clog.Test("Scenario", "Business", "%v", weather.req)
 
 	for {
 		select {
 		case <-tickerQuote.C:
-			// body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
-			// json.Unmarshal(body, &stock.req)
+			body, _ = APICall(S.conf.QuoteAPI.QuoteURL, Quotekey, "GET", S.conf.QuoteAPI.QuoteSymbols)
+			json.Unmarshal(body, &stock.req)
 		default:
 			stock.ctx.SetHexColor("#000000")
 			stock.ctx.Clear()
 			stock.sprite.Move()
+			weather.sprite.Move()
 			S.tk.PlayImage(stock.ctx.Image(), time.Millisecond*50)
 		}
 	}
