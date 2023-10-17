@@ -8,8 +8,8 @@ import (
 	"image/color"
 	"strings"
 
-	"GoLedMatrix/clog"
-	"GoLedMatrix/emulator"
+	"clog"
+	"emulator"
 )
 
 // DefaultConfig default WS281x configuration

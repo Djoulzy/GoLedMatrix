@@ -1,8 +1,8 @@
 package scenario
 
 import (
-	"GoLedMatrix/clog"
-	"GoLedMatrix/rgbmatrix"
+	"clog"
+	"rgbmatrix"
 	"encoding/json"
 	"fmt"
 	"image"

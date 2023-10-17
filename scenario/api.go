@@ -1,7 +1,7 @@
 package scenario
 
 import (
-	"GoLedMatrix/clog"
+	"clog"
 	"crypto/tls"
 	"fmt"
 	"io/ioutil"

@@ -15,9 +15,9 @@ import (
 	"github.com/gorilla/mux"
 	"gopkg.in/gographics/imagick.v3/imagick"
 
-	"GoLedMatrix/clog"
-	"GoLedMatrix/confload"
-	"GoLedMatrix/scenario"
+	"clog"
+	"confload"
+	"scenario"
 )
 
 type HTTP struct {

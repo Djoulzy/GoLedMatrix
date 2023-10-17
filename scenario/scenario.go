@@ -1,10 +1,10 @@
 package scenario
 
 import (
-	"GoLedMatrix/clog"
-	"GoLedMatrix/confload"
-	"GoLedMatrix/emulator"
-	"GoLedMatrix/rgbmatrix"
+	"clog"
+	"confload"
+	"emulator"
+	"rgbmatrix"
 	"io/fs"
 	"io/ioutil"
 	"log"

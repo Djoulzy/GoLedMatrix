@@ -1,7 +1,7 @@
 package scenario
 
 import (
-	"GoLedMatrix/rgbmatrix"
+	"rgbmatrix"
 	"fmt"
 	"image"
 	"time"
