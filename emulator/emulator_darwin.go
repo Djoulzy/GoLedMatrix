@@ -1,6 +1,3 @@
-//go:build !arm64
-// +build !arm64
-
 package emulator
 
 import (
@@ -77,7 +74,7 @@ func (e *Emulator) Start() {
 	go func() {
 		dims := e.matrixWithMarginsRect()
 		w := app.NewWindow(
-			app.Size(unit.Px(float32(dims.Max.X)), unit.Px(float32(dims.Max.Y))),
+			app.Size(unit.Dp(float32(dims.Max.X)), unit.Dp(float32(dims.Max.Y))),
 			app.Title(windowTitle),
 		)
 		if err := e.mainWindowLoop(w); err != nil {
