@@ -1,10 +1,10 @@
 package scenario
 
 import (
-	"clog"
-	"confload"
-	"emulator"
-	"rgbmatrix"
+	"github.com/Djoulzy/GoLedMatrix/clog"
+	"github.com/Djoulzy/GoLedMatrix/confload"
+	"github.com/Djoulzy/GoLedMatrix/emulator"
+	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
 	"io/fs"
 	"io/ioutil"
 	"log"
@@ -70,7 +70,7 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData, version strin
 	S.tk = rgbmatrix.NewToolKit(t)
 	defer S.tk.Close()
 
-	S.quit = make(chan bool, 0)
+	S.quit = make(chan bool)
 
 	S.Startup(version)
 

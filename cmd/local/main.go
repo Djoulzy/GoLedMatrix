@@ -1,12 +1,12 @@
 package main
 
 import (
-	"clog"
-	"confload"
-	"rgbmatrix"
-	"scenario"
-	"server"
 	"fmt"
+	"github.com/Djoulzy/GoLedMatrix/clog"
+	"github.com/Djoulzy/GoLedMatrix/confload"
+	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
+	"github.com/Djoulzy/GoLedMatrix/scenario"
+	"github.com/Djoulzy/GoLedMatrix/server"
 	"net"
 	"runtime"
 )

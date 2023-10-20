@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"clog"
+	"github.com/Djoulzy/GoLedMatrix/clog"
 
 	"github.com/go-ini/ini"
 )

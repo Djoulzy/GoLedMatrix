@@ -1,7 +1,7 @@
 package scenario
 
 import (
-	"clog"
+	"github.com/Djoulzy/GoLedMatrix/clog"
 	"image"
 	"math"
 	"math/rand"

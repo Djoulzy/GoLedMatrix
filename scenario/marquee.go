@@ -1,7 +1,7 @@
 package scenario
 
 import (
-	"clog"
+	"github.com/Djoulzy/GoLedMatrix/clog"
 	"image"
 	"image/color"
 	"time"

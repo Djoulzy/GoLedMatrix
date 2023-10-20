@@ -1,10 +1,9 @@
 package scenario
 
 import (
-	"clog"
+	"github.com/Djoulzy/GoLedMatrix/clog"
 	"fmt"
 	"image"
-	"io/ioutil"
 	"log"
 	"os"
 	"time"
@@ -25,7 +24,7 @@ func (S *Scenario) slideShow() {
 
 	mediaDir := fmt.Sprintf("%simg/", S.conf.DefaultConf.MediaDir)
 
-	files, err := ioutil.ReadDir(mediaDir)
+	files, err := os.ReadDir(mediaDir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,7 +38,7 @@ func (S *Scenario) slideShow() {
 			if err != nil {
 				clog.Fatal("scenario", "slideShow", err)
 			}
-			img, _, err := image.Decode(f)
+			img, _, _ := image.Decode(f)
 
 			err = S.tk.PlayImage(img, d)
 			if err != nil {
@@ -49,18 +48,18 @@ func (S *Scenario) slideShow() {
 	}
 }
 
-func (S *Scenario) stillIlage(photo string) {
-	var d time.Duration = time.Second * 3
+// func (S *Scenario) stillIlage(photo string) {
+// 	var d time.Duration = time.Second * 3
 
-	f, err := os.Open(photo)
-	if err != nil {
-		clog.Fatal("scenario", "slideShow", err)
-	}
-	img, _, err := image.Decode(f)
+// 	f, err := os.Open(photo)
+// 	if err != nil {
+// 		clog.Fatal("scenario", "slideShow", err)
+// 	}
+// 	img, _, _ := image.Decode(f)
 
-	err = S.tk.PlayImage(img, d)
-	if err != nil {
-		clog.Fatal("scenario", "slideShow", err)
-	}
+// 	err = S.tk.PlayImage(img, d)
+// 	if err != nil {
+// 		clog.Fatal("scenario", "slideShow", err)
+// 	}
 
-}
+// }

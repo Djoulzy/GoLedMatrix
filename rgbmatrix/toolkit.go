@@ -132,7 +132,7 @@ func (tk *ToolKit) PlayImageUntil(i image.Image, notify <-chan time.Time) error 
 // images should be equal to the len of delay. If loop is true the function
 // loops over images until a true is sent to the returned chan
 func (tk *ToolKit) PlayImages(images []image.Image, delay []time.Duration, loop int) chan bool {
-	quit := make(chan bool, 0)
+	quit := make(chan bool)
 
 	go func() {
 		l := len(images)

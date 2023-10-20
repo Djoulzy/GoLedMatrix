@@ -32,7 +32,7 @@ type Emulator struct {
 	leds []color.Color
 	w    *app.Window
 	gtx  layout.Context
-	wg   sync.WaitGroup
+	// wg   sync.WaitGroup
 
 	isReady bool
 }

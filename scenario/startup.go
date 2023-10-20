@@ -1,8 +1,8 @@
 package scenario
 
 import (
-	"rgbmatrix"
 	"fmt"
+	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
 	"image"
 	"time"
 
@@ -21,7 +21,7 @@ type StartupParams struct {
 type Startup struct {
 	ctx    *gg.Context
 	sprite []*rgbmatrix.Sprite
-	req    StockResponse
+	// req    StockResponse
 }
 
 func (S *Startup) DrawLine(param interface{}) {

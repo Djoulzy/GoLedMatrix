@@ -1,6 +1,6 @@
 package confload
 
-import "rgbmatrix"
+import "github.com/Djoulzy/GoLedMatrix/rgbmatrix"
 
 type HTTPserver struct {
 	Addr    string

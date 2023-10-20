@@ -9,9 +9,9 @@ import (
 // Canvas is a image.Image representation of a WS281x matrix, it implements
 // image.Image interface and can be used with draw.Draw for example
 type Canvas struct {
-	w, h   int
-	m      Matrix
-	closed bool
+	w, h int
+	m    Matrix
+	// closed bool
 }
 
 // NewCanvas returns a new Canvas using the given width and height and creates

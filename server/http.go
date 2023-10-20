@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -15,9 +15,9 @@ import (
 	"github.com/gorilla/mux"
 	"gopkg.in/gographics/imagick.v3/imagick"
 
-	"clog"
-	"confload"
-	"scenario"
+	"github.com/Djoulzy/GoLedMatrix/clog"
+	"github.com/Djoulzy/GoLedMatrix/confload"
+	"github.com/Djoulzy/GoLedMatrix/scenario"
 )
 
 type HTTP struct {
@@ -100,7 +100,7 @@ func (h *HTTP) getDir(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HTTP) setControls(w http.ResponseWriter, r *http.Request) {
-	body, _ := ioutil.ReadAll(r.Body)
+	body, _ := io.ReadAll(r.Body)
 
 	req := &scenario.ControlParams{}
 	json.Unmarshal(body, &req)
@@ -165,7 +165,7 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	tempFile, err := ioutil.TempFile(h.tempDir, "tmp-*")
+	tempFile, err := os.CreateTemp(h.tempDir, "tmp-*")
 	if err != nil {
 		clog.Error("HTTPServer", "uploadMedia", "%s", err)
 	}
@@ -176,7 +176,7 @@ func (h *HTTP) uploadMedia(w http.ResponseWriter, r *http.Request) {
 		os.Remove(tempFile.Name())
 	}()
 
-	fileBytes, err := ioutil.ReadAll(file)
+	fileBytes, err := io.ReadAll(file)
 	if err != nil {
 		clog.Error("HTTPServer", "uploadMedia", "%s", err)
 	}

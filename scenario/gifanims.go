@@ -1,9 +1,8 @@
 package scenario
 
 import (
-	"clog"
+	"github.com/Djoulzy/GoLedMatrix/clog"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"time"
@@ -42,7 +41,7 @@ func (S *Scenario) displayGif() {
 
 	mediaDir := fmt.Sprintf("%sanim/", S.conf.DefaultConf.MediaDir)
 
-	files, err := ioutil.ReadDir(mediaDir + gifParams.Serie)
+	files, err := os.ReadDir(mediaDir + gifParams.Serie)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,11 +51,11 @@ func (S *Scenario) displayGif() {
 		if err != nil {
 			clog.Fatal("scenario", "slideShow", err)
 		}
-		close, err := S.tk.PlayGIF(f)
+		close, _ := S.tk.PlayGIF(f)
 		select {
 		case <-ticker.C:
 			close <- true
-			break
+			// break
 		case <-S.quit:
 			close <- true
 			return
