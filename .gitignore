@@ -32,4 +32,6 @@ media/tmp/*
 # Dependency directories (remove the comment below to include it)
 vendor/
 GoLedMatrix
+GoLedServer
+GoLedClient
 config.ini

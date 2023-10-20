@@ -7,7 +7,7 @@ After=network-online.target
 [Service]
 Type=simple
 RemainAfterExit=yes
-ExecStart=/home/dietpi/go/src/GoLedMatrix/GoLedMatrix -f /home/dietpi/go/src/GoLedMatrix/config.ini
+ExecStart=/home/dietpi/go/src/github.com/Djoulzy/GoLedMatrix/GoLedMatrix -f /home/dietpi/go/src/github.com/Djoulzy/GoLedMatrix/config.ini
 User=root
 Group=root
 TimeoutSec=30

@@ -1,14 +1,15 @@
 package scenario
 
 import (
+	"io/fs"
+	"log"
+	"os"
+	"time"
+
 	"github.com/Djoulzy/GoLedMatrix/clog"
 	"github.com/Djoulzy/GoLedMatrix/confload"
 	"github.com/Djoulzy/GoLedMatrix/emulator"
 	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
-	"io/fs"
-	"io/ioutil"
-	"log"
-	"time"
 )
 
 type DataParams interface{}
@@ -27,7 +28,7 @@ type ControlParams struct {
 	ModuleParams DataParams `json:"params"`
 }
 
-func (S *Scenario) GetDirList(src map[string]string) []fs.FileInfo {
+func (S *Scenario) GetDirList(src map[string]string) []fs.DirEntry {
 	var path string
 
 	switch src["type"] {
@@ -40,7 +41,7 @@ func (S *Scenario) GetDirList(src map[string]string) []fs.FileInfo {
 	if serie, ok := src["serie"]; ok {
 		path += serie
 	}
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,7 +55,7 @@ func (S *Scenario) Control(params *ControlParams) {
 	S.quit <- true
 }
 
-func (S *Scenario) Run(m interface{}, config *confload.ConfigData, version string) {
+func (S *Scenario) Init(m interface{}, config *confload.ConfigData, version string) {
 	switch m.(type) {
 	case emulator.Emulator:
 		duration := time.Second * 1
@@ -67,12 +68,16 @@ func (S *Scenario) Run(m interface{}, config *confload.ConfigData, version strin
 	S.controls = nil
 	S.m = &t
 	S.conf = config
-	S.tk = rgbmatrix.NewToolKit(t)
-	defer S.tk.Close()
-
 	S.quit = make(chan bool)
+	S.tk = rgbmatrix.NewToolKit(t)
 
 	S.Startup(version)
+}
+
+func (S *Scenario) Run(m interface{}, config *confload.ConfigData, version string) {
+
+	S.Init(m, config, version)
+	defer S.tk.Close()
 
 	for {
 		switch S.mode {

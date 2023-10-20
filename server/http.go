@@ -84,7 +84,7 @@ func (h *HTTP) getDir(w http.ResponseWriter, r *http.Request) {
 
 	var homeVars struct {
 		DefVal string
-		FList  []fs.FileInfo
+		FList  []fs.DirEntry
 	}
 
 	homeVars.DefVal = r.URL.Query()["default"][0]

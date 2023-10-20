@@ -6,6 +6,8 @@ build: export CGO_CFLAGS_ALLOW = -Xpreprocessor
 build:
 	$(eval version = $(shell bump2version --dry-run --allow-dirty --list patch | grep new_version | sed -r s,"^.*=",,))
 	go build -ldflags="$(flags) 'main.version=$(version)' -X 'main.build=$(build)'" -o GoLedMatrix cmd/local/*
+	go build -ldflags="$(flags) 'main.version=$(version)' -X 'main.build=$(build)'" -o GoLedServer cmd/server/*
+	go build -ldflags="$(flags) 'main.version=$(version)' -X 'main.build=$(build)'" -o GoLedClient cmd/client/*
 
 patch:
 	$(eval version = $(shell bump2version --allow-dirty --list patch | grep new_version | sed -r s,"^.*=",,))

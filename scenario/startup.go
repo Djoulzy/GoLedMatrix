@@ -2,9 +2,10 @@ package scenario
 
 import (
 	"fmt"
-	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
 	"image"
 	"time"
+
+	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
 
 	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/bitmapfont"
