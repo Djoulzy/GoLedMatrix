@@ -1,8 +1,11 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
+	"image"
 	"net"
+	"os"
 	"runtime"
 
 	"github.com/Djoulzy/GoLedMatrix/clog"
@@ -13,7 +16,9 @@ import (
 var version = "No Version Provided"
 var goVersion = runtime.Version()
 var config = &confload.ConfigData{}
+var display *Display
 var terminal *Terminal
+var graphic *Image
 
 func getIP() string {
 	ifaces, _ := net.Interfaces()
@@ -47,13 +52,22 @@ func main() {
 		}
 	}
 
+	f, err := os.Open("/Users/jules/go/src/github.com/Djoulzy/GoLedMatrix/media/img/mario.png")
+	if err != nil {
+		clog.Fatal("scenario", "slideShow", err)
+	}
+	img, _, _ := image.Decode(f)
+	gob.Register(img)
+
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	if err != nil {
 		clog.Fatal("GoLedServer", "main", err)
 	}
 
-	terminal = InitTerminal(&m)
-	terminal.Show()
+	display = NewDisplay(&m)
+	terminal = InitTerminal(display)
+	graphic = InitImage(display)
+
 	terminal.AddLine("GOLedServer", "#FF0000")
 	terminal.AddLine(BuildVersion, "#f29d0c")
 	terminal.AddLine("Listen:", "#FF0000")

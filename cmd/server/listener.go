@@ -1,17 +1,20 @@
 package main
 
 import (
-	"bufio"
+	"encoding/gob"
+	"image"
 	"io"
 	"log"
 	"net"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/Djoulzy/GoLedMatrix/clog"
 )
 
 const (
-	Message       = "Ok"
+	message       = "Ok"
 	StopCharacter = "\r\n\r\n"
 )
 
@@ -20,34 +23,49 @@ func handler(conn net.Conn) {
 	defer conn.Close()
 
 	var (
-		buf = make([]byte, 1024)
-		r   = bufio.NewReader(conn)
-		w   = bufio.NewWriter(conn)
+		buf = Message{}
+		r   = gob.NewDecoder(conn)
+		w   = gob.NewEncoder(conn)
 	)
+
+	mess := Message{
+		App:  "TERM",
+		Type: "STRING",
+		Body: []byte(message),
+	}
 
 ILOOP:
 	for {
-		n, err := r.Read(buf)
-		data := string(buf[:n])
+		err := r.Decode(&buf)
+		data := string(buf.Type)
+		clog.Info("Server", "Handler", "Received: %s", buf.Type)
 
 		switch err {
 		case io.EOF:
 			break ILOOP
 		case nil:
-			for _, parts := range strings.Fields(data) {
-				terminal.AddLine(parts, "#00AA00")
+			switch buf.Type {
+			case "STRING":
+				for _, parts := range strings.Fields(buf.Body.(string)) {
+					terminal.AddLine(parts, "#00AA00")
+				}
+				if isTransportOver(data) {
+					break ILOOP
+				}
+				w.Encode(mess)
+			case "IMAGE":
+				display.SetImage(buf.Body.(image.Image))
+				display.Render()
+				w.Encode(mess)
 			}
-			if isTransportOver(data) {
-				break ILOOP
-			}
+
 		default:
 			log.Fatalf("Receive data failed:%s", err)
 			return
 		}
 
 	}
-	w.Write([]byte(Message))
-	w.Flush()
+
 }
 
 func isTransportOver(data string) (over bool) {

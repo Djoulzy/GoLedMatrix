@@ -2,55 +2,37 @@ package main
 
 import (
 	"image"
-	"time"
 
-	"github.com/Djoulzy/GoLedMatrix/clog"
 	"github.com/Djoulzy/GoLedMatrix/rgbmatrix"
 
-	"github.com/fogleman/gg"
 	"github.com/hajimehoshi/bitmapfont"
 )
 
-type StartupParams struct {
-	FGColor1 string `json:"fgcolor1"`
-	BGColor  string `json:"bgcolor"`
-	Message  string `json:"message"`
-	FontFace string `json:"fontface"`
-	FontSize int    `json:"fontsize"`
-}
-
 type Terminal struct {
-	ctx        *gg.Context
-	tk         *rgbmatrix.ToolKit
-	size       image.Point
+	Disp       *Display
 	lines      []*rgbmatrix.Sprite
 	hide       chan bool
 	charHeight int
 	charWidth  int
 	maxLines   int
 	nextLine   int
-	// req    StockResponse
 }
 
-func InitTerminal(m *rgbmatrix.Matrix) *Terminal {
+func InitTerminal(d *Display) *Terminal {
 	term := Terminal{
-		tk:         rgbmatrix.NewToolKit(*m),
+		Disp:       d,
 		charHeight: 8,
 		charWidth:  5,
 	}
 
-	term.size = term.tk.Canvas.Bounds().Max
-	term.ctx = gg.NewContext(term.size.X, term.size.Y)
-	term.ctx.SetFontFace(bitmapfont.Gothic10r)
-	term.maxLines = term.size.Y / term.charHeight
+	term.Disp.CTX.SetFontFace(bitmapfont.Gothic10r)
+	term.maxLines = term.Disp.Size.Y / term.charHeight
 	term.lines = make([]*rgbmatrix.Sprite, term.maxLines)
 	term.hide = make(chan bool)
 
-	clog.Warn("Terminal", "InitTerminal", "Nblines = %d", term.maxLines)
-
 	for index := range term.lines {
 		term.lines[index] = &rgbmatrix.Sprite{
-			ScreenSize: term.size,
+			ScreenSize: term.Disp.Size,
 			Size:       image.Point{0, term.charHeight},
 			Pos:        image.Point{term.charWidth, term.charHeight * (index + 1)},
 			Text:       "",
@@ -64,8 +46,8 @@ func InitTerminal(m *rgbmatrix.Matrix) *Terminal {
 
 func (T *Terminal) DrawLine(param interface{}) {
 	sprite := param.(*rgbmatrix.Sprite)
-	T.ctx.SetHexColor(sprite.FgColor)
-	T.ctx.DrawString(sprite.Text, float64(sprite.Pos.X), float64(sprite.Pos.Y))
+	T.Disp.CTX.SetHexColor(sprite.FgColor)
+	T.Disp.CTX.DrawString(sprite.Text, float64(sprite.Pos.X), float64(sprite.Pos.Y))
 }
 
 func (T *Terminal) ScrollUp() {
@@ -90,28 +72,14 @@ func (T *Terminal) AddLine(mess string, color string) {
 	T.lines[T.nextLine].Draw = T.DrawLine
 
 	T.nextLine++
+	T.Refresh()
 }
 
-func (T *Terminal) Run() {
-	for {
-		select {
-		case <-T.hide:
-			return
-		default:
-			T.ctx.SetHexColor("#000000")
-			T.ctx.Clear()
-			for _, line := range T.lines {
-				line.Move()
-			}
-			T.tk.PlayImage(T.ctx.Image(), time.Millisecond*50)
-		}
+func (T *Terminal) Refresh() {
+	T.Disp.CTX.SetHexColor("#000000")
+	T.Disp.CTX.Clear()
+	for _, line := range T.lines {
+		line.Move()
 	}
-}
-
-func (T *Terminal) Show() {
-	go T.Run()
-}
-
-func (T *Terminal) Hide() {
-	T.hide <- true
+	T.Disp.Render()
 }
