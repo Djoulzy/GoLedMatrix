@@ -48,15 +48,16 @@ ILOOP:
 			case "STRING":
 				for _, parts := range strings.Fields(buf.Body.(string)) {
 					terminal.AddLine(parts, "#00AA00")
+					display.Render()
 				}
 				if isTransportOver(data) {
 					break ILOOP
 				}
 				w.Encode(mess)
 			case "IMAGE":
-				display.SetImage(buf.Body.(image.Image))
-				display.Render()
+				graphic.SetImage(buf.Body.(image.Image))
 				w.Encode(mess)
+				display.Render()
 			}
 
 		default:

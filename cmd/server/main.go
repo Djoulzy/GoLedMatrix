@@ -65,13 +65,14 @@ func main() {
 	}
 
 	display = NewDisplay(&m)
-	terminal = InitTerminal(display)
 	graphic = InitImage(display)
+	terminal = InitTerminal(display)
 
 	terminal.AddLine("GOLedServer", "#FF0000")
 	terminal.AddLine(BuildVersion, "#f29d0c")
 	terminal.AddLine("Listen:", "#FF0000")
 	terminal.AddLine(fmt.Sprintf("%s:%d", config.HTTPserver.Addr, config.HTTPserver.Port), "#ffe900")
+	display.Render()
 
 	go Listener()
 	m.Start()

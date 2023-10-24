@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"image"
 	"image/draw"
 
@@ -8,28 +9,38 @@ import (
 	"github.com/fogleman/gg"
 )
 
+type LayerType int
+
 const (
-	CONTEXT int = iota
+	CONTEXT LayerType = iota
 	IMAGE
 )
 
 type Layer struct {
-	Type int
+	Type LayerType
 	CTX  *gg.Context
-	img  image.Image
+	img  *image.Image
 }
 
-func (L *Layer) GetContent() image.Image {
+func (L *Layer) GetContent() (image.Image, error) {
 	if L.Type == CONTEXT {
-		return L.CTX.Image()
+		return L.CTX.Image(), nil
+	} else {
+		if L.img != nil {
+			return *L.img, nil
+		}
+		return nil, errors.New("No image")
 	}
-	return L.img
+}
+
+func (L *Layer) SetImage(img *image.Image) {
+	L.img = img
 }
 
 type Display struct {
-	TK   *rgbmatrix.ToolKit
-	Size image.Point
-
+	TK     *rgbmatrix.ToolKit
+	CTX    *gg.Context
+	Size   image.Point
 	Layers []*Layer
 }
 
@@ -39,26 +50,35 @@ func NewDisplay(m *rgbmatrix.Matrix) *Display {
 	}
 
 	disp.Size = disp.TK.Canvas.Bounds().Max
-	// disp.CTX = gg.NewContext(disp.Size.X, disp.Size.Y)
+	disp.CTX = gg.NewContext(disp.Size.X, disp.Size.Y)
 	disp.Layers = make([]*Layer, 0)
 
 	return &disp
 }
 
-func (D *Display) GetLayer() int {
-	l := Layer{}
+func (D *Display) GetLayer(t LayerType) *Layer {
+	l := Layer{
+		Type: t,
+	}
+	if t == CONTEXT {
+		l.CTX = D.CTX
+	} else {
+		l.img = nil
+	}
 	D.Layers = append(D.Layers, &l)
-	return len(D.Layers) - 1
-}
-
-func (D *Display) SetImage(img image.Image) {
-	D.img = img
+	return &l
 }
 
 func (D *Display) Render() {
-	draw.Draw(D.TK.Canvas, D.TK.Canvas.Bounds(), D.CTX.Image(), image.Point{}, draw.Over)
-	if D.img != nil {
-		draw.Draw(D.TK.Canvas, D.TK.Canvas.Bounds(), D.img, image.Point{}, draw.Over)
+	var img image.Image
+	var err error
+
+	for _, l := range D.Layers {
+		if img, err = l.GetContent(); err == nil {
+			draw.Draw(D.TK.Canvas, D.TK.Canvas.Bounds(), img, image.Point{}, draw.Over)
+		}
 	}
 	D.TK.Canvas.Render()
+	// D.CTX.SetHexColor("#000000")
+	// D.CTX.Clear()
 }

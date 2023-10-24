@@ -10,6 +10,7 @@ import (
 
 type Terminal struct {
 	Disp       *Display
+	Layer      *Layer
 	lines      []*rgbmatrix.Sprite
 	hide       chan bool
 	charHeight int
@@ -21,11 +22,12 @@ type Terminal struct {
 func InitTerminal(d *Display) *Terminal {
 	term := Terminal{
 		Disp:       d,
+		Layer:      d.GetLayer(CONTEXT),
 		charHeight: 8,
 		charWidth:  5,
 	}
 
-	term.Disp.CTX.SetFontFace(bitmapfont.Gothic10r)
+	term.Layer.CTX.SetFontFace(bitmapfont.Gothic10r)
 	term.maxLines = term.Disp.Size.Y / term.charHeight
 	term.lines = make([]*rgbmatrix.Sprite, term.maxLines)
 	term.hide = make(chan bool)
@@ -46,8 +48,12 @@ func InitTerminal(d *Display) *Terminal {
 
 func (T *Terminal) DrawLine(param interface{}) {
 	sprite := param.(*rgbmatrix.Sprite)
-	T.Disp.CTX.SetHexColor(sprite.FgColor)
-	T.Disp.CTX.DrawString(sprite.Text, float64(sprite.Pos.X), float64(sprite.Pos.Y))
+	T.Layer.CTX.SetHexColor(sprite.FgColor)
+	T.Layer.CTX.DrawString(sprite.Text, float64(sprite.Pos.X), float64(sprite.Pos.Y))
+}
+
+func (T *Terminal) DeleteLine() {
+	
 }
 
 func (T *Terminal) ScrollUp() {
@@ -76,10 +82,9 @@ func (T *Terminal) AddLine(mess string, color string) {
 }
 
 func (T *Terminal) Refresh() {
-	T.Disp.CTX.SetHexColor("#000000")
-	T.Disp.CTX.Clear()
+	T.Layer.CTX.SetHexColor("#00000000")
+	T.Layer.CTX.Clear()
 	for _, line := range T.lines {
 		line.Move()
 	}
-	T.Disp.Render()
 }

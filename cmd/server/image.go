@@ -5,14 +5,16 @@ import (
 )
 
 type Image struct {
-	Disp *Display
-	img  *image.Image
-	hide chan bool
+	Disp  *Display
+	Layer *Layer
+	img   image.Image
+	hide  chan bool
 }
 
 func InitImage(d *Display) *Image {
 	img := Image{
-		Disp: d,
+		Disp:  d,
+		Layer: d.GetLayer(IMAGE),
 	}
 
 	img.hide = make(chan bool)
@@ -20,10 +22,7 @@ func InitImage(d *Display) *Image {
 	return &img
 }
 
-func (I *Image) SetImage(img *image.Image) {
+func (I *Image) SetImage(img image.Image) {
 	I.img = img
-}
-
-func (I *Image) Display() {
-	I.Disp.Render()
+	I.Layer.SetImage(&I.img)
 }
