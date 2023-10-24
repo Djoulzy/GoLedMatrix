@@ -53,10 +53,13 @@ func (T *Terminal) DrawLine(param interface{}) {
 }
 
 func (T *Terminal) DeleteLine() {
-	
+
 }
 
 func (T *Terminal) ScrollUp() {
+	T.Layer.CTX.SetHexColor("#000000")
+	T.Layer.CTX.Clear()
+
 	out := T.lines[0]
 	for i := 0; i < (T.maxLines - 1); i++ {
 		T.lines[i] = T.lines[i+1]
@@ -82,8 +85,6 @@ func (T *Terminal) AddLine(mess string, color string) {
 }
 
 func (T *Terminal) Refresh() {
-	T.Layer.CTX.SetHexColor("#00000000")
-	T.Layer.CTX.Clear()
 	for _, line := range T.lines {
 		line.Move()
 	}

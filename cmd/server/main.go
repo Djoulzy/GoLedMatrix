@@ -1,11 +1,8 @@
 package main
 
 import (
-	"encoding/gob"
 	"fmt"
-	"image"
 	"net"
-	"os"
 	"runtime"
 
 	"github.com/Djoulzy/GoLedMatrix/clog"
@@ -52,21 +49,14 @@ func main() {
 		}
 	}
 
-	f, err := os.Open("/Users/jules/go/src/github.com/Djoulzy/GoLedMatrix/media/img/mario.png")
-	if err != nil {
-		clog.Fatal("scenario", "slideShow", err)
-	}
-	img, _, _ := image.Decode(f)
-	gob.Register(img)
-
 	m, err := rgbmatrix.NewRGBLedMatrix(&config.HardwareConfig, &config.RuntimeOptions)
 	if err != nil {
 		clog.Fatal("GoLedServer", "main", err)
 	}
 
 	display = NewDisplay(&m)
-	graphic = InitImage(display)
 	terminal = InitTerminal(display)
+	graphic = InitImage(display)
 
 	terminal.AddLine("GOLedServer", "#FF0000")
 	terminal.AddLine(BuildVersion, "#f29d0c")

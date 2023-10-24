@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/gob"
 	"errors"
 	"image"
 	"image/draw"
@@ -29,7 +30,7 @@ func (L *Layer) GetContent() (image.Image, error) {
 		if L.img != nil {
 			return *L.img, nil
 		}
-		return nil, errors.New("No image")
+		return nil, errors.New("no image")
 	}
 }
 
@@ -53,6 +54,9 @@ func NewDisplay(m *rgbmatrix.Matrix) *Display {
 	disp.CTX = gg.NewContext(disp.Size.X, disp.Size.Y)
 	disp.Layers = make([]*Layer, 0)
 
+	tmpReg := image.NewNRGBA(disp.TK.Canvas.Bounds())
+	gob.Register(disp.CTX.Image())
+	gob.Register(tmpReg)
 	return &disp
 }
 
@@ -79,6 +83,4 @@ func (D *Display) Render() {
 		}
 	}
 	D.TK.Canvas.Render()
-	// D.CTX.SetHexColor("#000000")
-	// D.CTX.Clear()
 }

@@ -47,12 +47,12 @@ func (C *Client) Connect() {
 		log.Fatalln(err)
 		os.Exit(1)
 	}
-	f, err := os.Open("/Users/jules/go/src/github.com/Djoulzy/GoLedMatrix/media/img/mario.png")
-	if err != nil {
-		clog.Fatal("scenario", "slideShow", err)
-	}
-	img, _, _ := image.Decode(f)
-	gob.Register(img)
+	// f, err := os.Open("/Users/jules/go/src/github.com/Djoulzy/GoLedMatrix/media/img/mario.png")
+	// if err != nil {
+	// 	clog.Fatal("scenario", "slideShow", err)
+	// }
+	// img, _, _ := image.Decode(f)
+	// gob.Register(img)
 
 	C.read = gob.NewDecoder(C.conn)
 	C.write = gob.NewEncoder(C.conn)
@@ -98,11 +98,11 @@ func main() {
 	clog.LogLevel = 5
 	clog.StartLogging = true
 
-	cli := NewClient("192.168.0.6", config.HTTPserver.Port)
+	cli := NewClient("192.168.10.105", config.HTTPserver.Port)
 	cli.Connect()
 	defer cli.Disconnect()
 
-	cli.SendImage("/Users/jules/go/src/github.com/Djoulzy/GoLedMatrix/media/img/mario.png")
+	cli.SendImage(config.InstallDir + "media/img/actarus.png")
 	cli.SendText(message1)
 	cli.SendText(message2)
 	cli.SendText(StopCharacter)
